@@ -12,36 +12,46 @@ import sys
 import ConfigParser
 import ast
 import commands
+from webspider.utils.get_project_setting import get_project_setting
 
 
-class SendMail():
+class Mail():
 
-    def __init__(self,mail_type,user):
-        self.mail_type = mail_type
-        self._send_server = 'smtp.163.com'
-        PackagePath = commands.getoutput('echo $PackagePath')
-        self._cfg_path = '/'.join([PackagePath,'config/sendemail.cfg'])
-        self._smtp = smtplib.SMTP(self._send_server)
-        self.set_config()
-        self.user = user
+    def __init__(self,obj):
+        self.obj =obj
+        self.path = os.environ.get('SPIDERPATH')
+        self._set_server()
+        self._set_config()
 
-    def set_config(self):
+    def _set_server(self):
+        setting = get_project_setting()
+        self.email_var = setting['EMAIL']
+        self.send_server = self.email_var['EMAIL_HOST']
+        self.user = self.email_var['EMAIL_HOST_USER']
+        self.port = self.email_var['EMAIL_PORT']
+        self.password = self.email_var['EMAIL_HOST_PASSWORD']
+        self.smtp = smtplib.SMTP(self.send_server)
+
+    def _set_config(self):
+        cfg_path = os.path.join(self.path,'config')
+        filepath = os.path.join(cfg_path,'sendemail.cfg')
         self.cfg = ConfigParser.ConfigParser()
-        self.cfg.read(self._cfg_path)
-        self.to_addrs =ast.literal_eval(self.cfg.get(self.mail_type,'addrs'))
-        self.subject = self.cfg.get(self.mail_type,'subject')
-        self.txt = self.cfg.get(self.mail_type,'txt')
+        self.cfg.read(filepath)
+        self.to_addrs =ast.literal_eval(self.cfg.get(self.obj,'addrs'))
+        self.subject = self.cfg.get(self.obj,'subject')
 
-    def send_email(self,filename=None,msghtml=None,msgtxt=None):
+    def send_email(self,msgtxt=None,filename=None,msghtml=None):
         ms = MIMEMultipart()
         Addrs = [email.utils.formataddr((False,addr)) for addr in self.to_addrs]
-        print Addrs
         ms['To'] = ','.join(Addrs)
         ms['From'] = self.user
         ms['Subject'] = self.subject
         ms['Date'] = email.utils.formatdate(time.time(),True)
         #ms.attach(MIMEText(self.txt))
-        if msghtml:
+        if msgtxt:
+            ms.attach(MIMEText(msgtxt,'plain','utf8'))
+
+        if msghtml is not None:
             ms.attach(MIMEText(msghtml,'html','utf8'))
    
         if filename:
@@ -50,12 +60,11 @@ class SendMail():
             attat['Content-Disposition']='attatcnment;filename="%s" '%filename
             ms.attach(attat)
         
-        if msgtxt:
-            ms.attach(MIMEText(msgtxt,'plain','utf8'))    
-        self._smtp.login(ms['From'],'*******')
+        self.smtp.login(self.user,self.password)
         try:
-            self._smtp.sendmail(ms['From'],Addrs,ms.as_string())
-            self._smtp.quit()
+            self.smtp.sendmail(ms['From'],Addrs,ms.as_string())
+            self.smtp.quit()
+            print 'send success'
             return
         except Exception,e:
             print str(e)
@@ -64,7 +73,7 @@ class SendMail():
 
 
 if __name__=="__main__":
-    S_mail = SendMail('test','email')
-    S_mail.send_email('send_email.py',None,'hello,python')
+    S_mail = Mail('myself')
+    S_mail.send_email(msgtxt='send_email')
 
 

@@ -1,6 +1,8 @@
 #-*-coding:utf-8 -*-
 __author__ = 'wanghb311'
 
+
+import os
 import copy
 import warnings
 from collections import MutableMapping
@@ -25,8 +27,11 @@ class Settings(MutableMapping):
     def __len__(self):
         return len(self.attributes)
 
+
     def __getitem__(self, name):
-        return self.attributes[name].value
+        if name not in self:
+            return None
+        return self.attributes[name]
 
     def get(self,name,default=None):
         return self[name] if self[name] is not None else default
@@ -35,13 +40,14 @@ class Settings(MutableMapping):
         self.set(key,value)
 
     def set(self,key,value):
+        self._assert_mutablity()
         self.attributes[key] = value
 
-    def delete(self,name):
-        self.assert_mutablity()
+    def __delitem__(self, name):
+        self._assert_mutablity()
         del self.attributes[name]
 
-    def assert_mutablity(self):
+    def _assert_mutablity(self):
         if self.freeze:
             raise TypeError(u"该类是不可变的，不允许删除")
 
@@ -55,6 +61,8 @@ class Settings(MutableMapping):
         copy = self.copy()
         copy.fronzen()
         return copy
+
+
 
 
 

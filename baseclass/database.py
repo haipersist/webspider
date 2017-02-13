@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*-coding:utf-8 -*-
 import MySQLdb
-from utils.get_project_setting import get_project_setting
+import cPickle as pickle
+from webspider.utils.get_project_setting import get_project_setting
 
 class Database():
 
@@ -20,13 +21,21 @@ class Database():
         self.cursor = self.con.cursor(cursorclass=MySQLdb.cursors.DictCursor)
         self.cursor.execute('SET NAMES utf8')
     
-    def query_dic(self,sql,where=None):
+    def query(self,sql,where=None):
         if where:
             sql = "%s where %s" % (sql,where)
         self.cursor.execute(sql)
         return self.cursor.fetchall()
         
     def insert_by_dic(self,table,data):
+        """
+        the method is used to insert data into table ,
+        the paramater data must be dict .
+
+        :param table:
+        :param data:
+        :return:
+        """
         if not isinstance(data,dict):
             return None
         keys=data.keys()
@@ -66,8 +75,12 @@ class Database():
                 ENCLOSED BY '' LINES TERMINATED BY '\n' " % ( 
             file_name, table)
         self.cursor.execute(sql_load)
-        self.conn.commit()
+        self.con.commit()
 
 
 
+if __name__ == "__main__":
+    db = Database()
+    sql = 'select * from website'
+    print db.query(sql)
 

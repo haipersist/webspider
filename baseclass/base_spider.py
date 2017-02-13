@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib
 import urllib2
-import requests
 import json
-import re
-import os
-import ConfigParser 
-from bs4 import BeautifulSoup
 from cStringIO import StringIO
 import cookielib
 import xml.etree.ElementTree as ET
+
+import requests
+from bs4 import BeautifulSoup
+
 from .utils.get_user_agent import get_user_agent
-from .config import ByrCfg,Job51Cfg,ZhiCfg,LgCfg,DjCfg,WechatCfg
+from webspider.config.config import ByrCfg,Job51Cfg,ZhiCfg,LgCfg,DjCfg,WechatCfg
+
 
 class Base_Spider(object):
 

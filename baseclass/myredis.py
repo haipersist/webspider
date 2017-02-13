@@ -5,43 +5,29 @@
 import sys
 import redis
 import cPickle as P
+from webspider.utils.get_project_setting import get_project_setting
 
 
 
 class MyRedis():
 
-    config={
-             'local':{
-                    'host':'127.0.0.1',
-                    'port':6379,
-                    'db':0,
-                    'password':'*******'
-                    },
-             'virtual':{
-                    'host':'192.168.6.128',
-                    'port':6379,
-                    'db':0,
-                    'password':'*******'
-                    },
-            }
+
+    def __init__(self):
+        self._connect()
 
 
-    def __init__(self,host):
-        self.host = host
-        self.__connect()
+    def _connect(self):
+        self.setting = get_project_setting()
+        config = self.setting['DATABASES']['mysql']
+        self.conn = redis.Connection(host=config[REDIS_HOST],
+                                     user=config[REDIS_USER],
+                                     port=config[REDIS_PORT],
+                                     password=config[REDIS_PASSWORD])
 
-
-    def __connect(self):
-        'any command can be executed by using self.redis'
-        self.conn = redis.Connection(host=self.config[self.host]['host'],
-                                     port=self.config[self.host]['port'],
-                                     db=self.config[self.host]['db'],
-                                     password=self.config[self.host]['password'])
-
-        self.rs = redis.Redis(host=self.config[self.host]['host'],
-                              port=self.config[self.host]['port'],
-                              db=self.config[self.host]['db'],
-                              password=self.config[self.host]['password'])
+        self.rs = redis.Redis(host=config[REDIS_HOST],
+                              user=config[REDIS_USER],
+                              port=config[REDIS_PORT],
+                              password=config[REDIS_PASSWORD])
 
 
     # any command used in redis client can be regarded as a string to be executed
