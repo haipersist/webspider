@@ -48,6 +48,7 @@ class Database():
         sql="INSERT INTO  %s (%s) VALUES (%s) " % (table,keystr,valstr)
         self.cursor.execute(sql)
         self.con.commit()
+        return True
 
     def update_(self,table,key,value,ref_key,ref_value):
         sql = 'update %s set %s="%s" where %s="%s" ' \
@@ -79,8 +80,4 @@ class Database():
 
 
 
-if __name__ == "__main__":
-    db = Database()
-    sql = 'select * from website'
-    print db.query(sql)
 

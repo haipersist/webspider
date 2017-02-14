@@ -30,11 +30,12 @@ class Mail():
         self.user = self.email_var['EMAIL_HOST_USER']
         self.port = self.email_var['EMAIL_PORT']
         self.password = self.email_var['EMAIL_HOST_PASSWORD']
-        self.smtp = smtplib.SMTP(self.send_server)
+
 
     def _set_config(self):
         cfg_path = os.path.join(self.path,'config')
         filepath = os.path.join(cfg_path,'sendemail.cfg')
+        self.filepath = filepath
         self.cfg = ConfigParser.ConfigParser()
         self.cfg.read(filepath)
         self.to_addrs =ast.literal_eval(self.cfg.get(self.obj,'addrs'))
@@ -55,17 +56,18 @@ class Mail():
             ms.attach(MIMEText(msghtml,'html','utf8'))
    
         if filename:
-            attat = MIMEText(file(filename,'rb').read(),'base64','utf8')
-            attat["Content-Type"]='application/octet-stream'
-            attat['Content-Disposition']='attatcnment;filename="%s" '%filename
+            attat = MIMEText(open(filename,'rb').read(),'base64','utf8')
+            attat["Content-Type"] = 'application/octet-stream'
+            attat['Content-Disposition'] = 'attachment;filename="%s" '%os.path.basename(filename)
             ms.attach(attat)
-        
-        self.smtp.login(self.user,self.password)
+            #print ms
+
         try:
+            self.smtp = smtplib.SMTP(self.send_server)
+            #self.smtp.connect(self.send_server)
+            self.smtp.login(self.user,self.password)
             self.smtp.sendmail(ms['From'],Addrs,ms.as_string())
             self.smtp.quit()
-            print 'send success'
-            return
         except Exception,e:
             print str(e)
 
@@ -75,5 +77,7 @@ class Mail():
 if __name__=="__main__":
     S_mail = Mail('myself')
     S_mail.send_email(msgtxt='send_email')
+
+
 
 
