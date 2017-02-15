@@ -18,6 +18,8 @@ class CompanyItem(scrapy.Item):
     name = scrapy.Field()
     address = scrapy.Field()
     introduction = scrapy.Field()
+    homepage = scrapy.Field()
+    pub_time = scrapy.Field()
 
 
 
@@ -30,10 +32,12 @@ class JobItem(scrapy.Item):
     title = scrapy.Field()
     welfare = scrapy.Field()
     requirement = scrapy.Field()
+    salary = scrapy.Field()
     link = scrapy.Field()
     pub_time = scrapy.Field()
-    company_name = scrapy.Field()
-    website_name = scrapy.Field()
+    company = scrapy.Field()
+    website_id = scrapy.Field()
+
 
 
 

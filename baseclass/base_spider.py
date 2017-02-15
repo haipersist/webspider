@@ -10,8 +10,7 @@ import random
 import requests
 from bs4 import BeautifulSoup
 
-from webspider.config.websetting import USER_AGENTS
-
+from webspider.config.websetting import USER_AGENTS,ZLCfg
 
 
 class Base_Spider(object):
@@ -35,7 +34,7 @@ class Base_Spider(object):
         '''
         self.headers = {}
         self.headers.setdefault('User-Agent',random.choice(USER_AGENTS))
-        self.headers.update(self.obj.header)
+        self.headers.update(self.obj.header())
 
     def login(self,posturl,postdata):
         """
@@ -125,4 +124,5 @@ class Base_Spider(object):
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
         urllib2.install_opener(opener)
         return opener
+
 
