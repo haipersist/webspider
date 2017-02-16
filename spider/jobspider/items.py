@@ -19,7 +19,7 @@ class CompanyItem(scrapy.Item):
     address = scrapy.Field()
     introduction = scrapy.Field()
     homepage = scrapy.Field()
-    pub_time = scrapy.Field()
+
 
 
 

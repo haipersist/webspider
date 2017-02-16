@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-
-
-from hbnnwebsite.datasource.jobspider.baseclass.base_spider import Base_Spider
-from hbnnwebsite.datasource.jobspider.baseclass.utils.get_cookies import get_cookie
-
+from webspider.baseclass.base_spider import Base_Spider
 
 
 class DJ_Spider(Base_Spider):

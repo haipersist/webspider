@@ -9,7 +9,7 @@ import json
 import codecs
 import requests
 import datetime
-from webspider.jobspider.jobspider.items import JobItem,CompanyItem
+from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.baseclass.database import Database
 from webspider.utils.mylogger import MyLogger
 

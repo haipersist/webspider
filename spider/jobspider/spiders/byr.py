@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import urllib2
-from baseclass.base_spider import Base_Spider
+from webspider.baseclass.base_spider import Base_Spider
 import requests
 
 

@@ -16,8 +16,8 @@ BOT_NAME = 'jobspider'
 path_dir = os.path.abspath(os.path.dirname(__file__))
 
 
-SPIDER_MODULES = ['jobspider.spiders']
-NEWSPIDER_MODULE = 'jobspider.spiders'
+SPIDER_MODULES = ['webspider.spider.jobspider.spiders']
+NEWSPIDER_MODULE = 'webspider.spider.jobspider.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -77,7 +77,7 @@ and the process_response() method of each middleware will be invoked in decreasi
 """
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None,
-   'jobspider.middlewares.UserAgentMiddleware.MyUserAgentDownloaderMiddleware': 400,
+   'webspider.spider.jobspider.middlewares.UserAgentMiddleware.MyUserAgentDownloaderMiddleware': 400,
     # add proxy ip
     }
 
@@ -107,7 +107,7 @@ FILES_EXPIRES = 50
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     #'house.pipelines.down_image.MyImagePipeline',
-    'jobspider.pipelines.store_origdata.MySQLLoadPipeLine':800,
+    #'jobspider.pipelines.store_origdata.MySQLLoadPipeLine':800,
 }
 
 LOG_LEVEL = 'INFO'
@@ -133,4 +133,6 @@ LOG_LEVEL = 'INFO'
 
 
 REDIRECT_ENABLED = False #关掉重定向,不会重定向到新的地址
-HTTPERROR_ALLOWED_CODES = [302,] #返回302时,按正常返回对待,可以正常写入cookie
+HTTPERROR_ALLOWED_CODES = [302,] #返回302时,按正常返回对待,可以正常写入cookie.
+
+

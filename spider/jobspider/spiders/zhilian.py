@@ -6,7 +6,7 @@ from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 import scrapy
 from webspider.baseclass.base_spider import Base_Spider
-from webspider.jobspider.jobspider.items import JobItem,CompanyItem
+from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.config.websetting import ZLCfg
 
 

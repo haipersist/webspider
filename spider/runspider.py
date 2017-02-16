@@ -3,10 +3,7 @@
 
 from twisted.internet import reactor
 from scrapy.crawler import Crawler,CrawlerRunner,CrawlerProcess
-#from scrapy import log, signals
 from scrapy.utils.project import get_project_settings
-from blog.resources.literature.house.settings import *
-from scrapy.settings import Settings
 
 
 class RunSpider(object):
@@ -37,15 +34,4 @@ class RunSpider(object):
 
 if __name__ == "__main__":
     spider = RunSpider()
-    spider.runOneSpider('JjMrspider')
-    #spider.runMulSpider('mlmr','mwyl','wzbwz')
-    import requests
-    data = {
-        "title":"swqddddxd",
-        "content":"sf",
-        "author_info":"sf",
-        "category":"ffwf"
-    }
-    #r = requests.post('http://dailyblog.applinzi.com/api/onlines/',data=data, auth=('haibo_persist','NANAnana320'))
-    #print r.text
-
+    spider.runOneSpider('lagou')

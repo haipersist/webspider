@@ -8,4 +8,5 @@ build
 dbsetting.py
 envvar.py
 websetting.py
+*.pyc
 

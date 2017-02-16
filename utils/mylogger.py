@@ -8,8 +8,9 @@ class MyLogger():
 
     def __init__(self, name):
         self.logger = logging.getLogger(name)
-        self._set_handlers()
         self.projectpath = os.environ.get('SPIDERPATH')
+        print self.projectpath
+        self._set_handlers()
 
 
     def _set_handlers(self):
@@ -42,3 +43,4 @@ if __name__ == "__main__":
     l = MyLogger('haibo').logger
     l.error('test error')
     l.warn('test warn')
+

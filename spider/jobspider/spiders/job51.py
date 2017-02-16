@@ -6,7 +6,7 @@ from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 import scrapy
 from webspider.baseclass.base_spider import Base_Spider
-from webspider.jobspider.jobspider.items import JobItem,CompanyItem
+from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.config.websetting import Job51Cfg
 
 
@@ -50,11 +50,12 @@ class Job51_Spider(CrawlSpider):
             if title.find('python') != -1:
                url = job.xpath('/p[@class="t1"]/span/a/@href').extract()[0]
                request = scrapy.Request(url=url,callback=self.parse_items,headers=self.spider.headers)
-               item = CompanyItem()
-               item['name'] = job.xpath('/span[@class="t2"]/a/@href').extract_first()
-               item['homepage'] = job.xpath('/span[@class="t2"]/a/@title').extract_first()
-               item['pub_time'] = job.xpath('/span[@class="t5"]/text()').extract_first()
-               request.meta['company_item'] = item
+               company_item, job_item = CompanyItem(), JobItem
+               company_item['name'] = job.xpath('/span[@class="t2"]/a/@href').extract_first()
+               company_item['homepage'] = job.xpath('/span[@class="t2"]/a/@title').extract_first()
+               job_item['pub_time'] = job.xpath('/span[@class="t5"]/text()').extract_first()
+               request.meta['company_item'] = company_item
+               request.meta['job_item'] = job_item
                yield request
 
     def parse_items(self,response):
@@ -65,7 +66,7 @@ class Job51_Spider(CrawlSpider):
         :return:item
         """
         sel = Selector(response)
-        item = JobItem()
+        item = response.meta['job_item']
         company_item = response.meta['company_item']
         company_item['introduction'] = sel.xpath('//div[@class="tmsg inbox"]/text()').extract_first()
         company_item['address'] = sel.xpath('//p[@class="fp"]/text()').extract_first()

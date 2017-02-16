@@ -2,15 +2,9 @@
 
 import scrapy
 from scrapy.spiders import CrawlSpider,Rule
-from blog.resources.literature.house.items import HouseItem
 from scrapy.selector import Selector
-from scrapy.linkextractors import LinkExtractor
-from bs4 import BeautifulSoup
-import requests
-from cStringIO import StringIO
-from urlconf import JiSanwen,JiJinpin
-from scrapy.http import Request,FormRequest
-from blog.resources.baseclass.base_spider import Base_Spider
+from scrapy.http import Request
+from webspider.baseclass.base_spider import Base_Spider
 
 
 class ZxSpider(CrawlSpider):
