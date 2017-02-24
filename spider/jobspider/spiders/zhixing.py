@@ -5,13 +5,15 @@ from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 from scrapy.http import Request
 from webspider.baseclass.base_spider import Base_Spider
+from webspider.config.websetting import ZhixingCfg
+
 
 
 class ZxSpider(CrawlSpider):
     name = 'zhixing'
 
     def start_requests(self):
-        spider = Base_Spider('zhixing',['Host','Origin','Referer'])
+        spider = Base_Spider(ZhixingCfg)
         posturl = 'http://zhixing.bjtu.edu.cn/member.php?mod=logging&action=login&loginsubmit=yes&infloat=yes&lssubmit=yes&inajax=1'
         postdata = {
             'username':'hbnn',
@@ -41,6 +43,7 @@ class ZxSpider(CrawlSpider):
             'Referer':'http://zhixing.bjtu.edu.cn/portal.php',
             'User-Agent': 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.12) Gecko/20080219 Firefox/2.0.0.12 Navigator/9.0.0.6'
         }
+        print cookies
         return [Request(url,cookies=cookies,callback=self.parse_page,headers=headers)]
 
     def parse_page(self,response):

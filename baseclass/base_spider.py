@@ -81,8 +81,7 @@ class Base_Spider(object):
         """
 
         content = self.session.get(url,timeout = 15,headers=self.headers)
-        if not isinstance(content,basestring and unicode):
-            content = content.decode('GBK').encode('utf8')
+        #print dict(content.cookies),'cookies'
         try:
             #get original data brfore transferring unicode
             content = content.content
@@ -90,7 +89,8 @@ class Base_Spider(object):
             content = content.text.encode('utf-8')
         except UnicodeDecodeError:
             content = content.text
-
+        #if not isinstance(content,basestring and unicode):
+        #   content = content.decode('GBK').encode('utf8')
         content = StringIO(content)
         if url_type == 'json':
             return json.load(content)

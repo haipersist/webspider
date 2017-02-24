@@ -22,6 +22,17 @@ class MySQLLoadPipeLine(object):
         self.today = self.day.strftime("%Y-%m-%d")
         self.logger = MyLogger('spider').logger
 
+    def to_dict(self,item):
+        result = {}
+        for key in item:
+            result[key] = item[key]
+            if isinstance(item[key],CompanyItem):
+                company = {}
+                for ele in result[key]:
+                    company['ele'] = result[key]['ele']
+                result[key] = company
+        return result
+
     def process_item(self, item, spider):
         """
         the method is mainly stores item data into mysql databases
@@ -36,35 +47,30 @@ class MySQLLoadPipeLine(object):
         :param spider:
         :return:
         """
-        result = {}
-        for key in item:
-            result[key] = item[key]
+        result = self.to_dict(item)
         db = Database()
-        if isinstance(item, CompanyItem):
-            sql = 'select id,name from company'
-            companies = [x['name'] for x in db.query(sql)]
-            if result['name'] not in companies:
-                db.insert_by_dic('company',result)
-            else:
-                pass
-        elif isinstance(item,JobItem):
-            sql = 'select id from jobs where link="%s"'%result[link]
+        if isinstance(item,JobItem):
+            sql = 'select id from jobs where link="%s"'%result['link']
             job = db.query(sql)
             if not job:
-                sql = 'select id from company where name="%s"'%result['company_name']
-                company = db.query(sql)[0]
-                try:
-                    result['company_id'] = company['id']
-                    db.insert_by_dic('jobs',result)
-                except IndexError:
-                    self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,result['company_name'))
+                company = result['company']
+                if isinstance(company,CompanyItem):
+                    sql = 'select id,name from company where name="%s"'%company['name']
+                    if not db.query(sql):
+                        db.insert_by_dic('company',company)
+                    sql = 'select id from company where name="%s"'%company['name']
+                    company = db.query(sql)[0]
+                    try:
+                        result['company_id'] = company['id']
+                        db.insert_by_dic('jobs',result)
+                    except IndexError:
+                        self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,result['company_name'))
 
         return item
 
 
 
-
-class JsonWriterPipeline(object):
+class LoadOnlinePipeline(object):
 
     def __init__(self):
         self.day = datetime.date.today().strftime("%Y-%m-%d")
@@ -76,7 +82,7 @@ class JsonWriterPipeline(object):
             result[key] = item[key]
         #line = json.dumps(result,ensure_ascii=False) + "\n"
         #self.file.write(line)
-        r = requests.post('http://dailyblog.applinzi.com/api/onlines/',data=result, auth=('haibo_persist','NANAnana320'))
+        r = requests.post('http://dailyblog.applinzi.com/api/onlines/',data=result, auth=('haibo_persist','******'))
         return item
 
     def close_spider(self,spider):
@@ -87,3 +93,4 @@ class JsonWriterPipeline(object):
 
 
 
+class

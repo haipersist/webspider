@@ -2,6 +2,8 @@
 # -*- coding:utf-8 -*-
 
 import re
+import json
+from cStringIO import StringIO
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 import scrapy
@@ -24,12 +26,19 @@ class LG_Spider(CrawlSpider):
         self.spider = Base_Spider(LgCfg)
         self.first_url = 'http://www.lagou.com/jobs/positionAjax.json?px=new&gx=%E5%85%A8%E8%81%8C&city=%E5%8C%97%E4%BA%AC&first=true&kd=python'
         response = self.spider.get_content(self.first_url,url_type='json')
+
         content = response['content']["positionResult"]
         totalCount,pagesize = content["totalCount"],content["resultSize"]
         pages = totalCount/pagesize if totalCount%pagesize == 0 else totalCount/pagesize + 1
+        #scrapy cookies must be dict.必须是字典形式.这和requests模块有区别。
+        cookies = LgCfg.cookies()
+        self.spider.headers.update({'Cookie':cookies})
         for page in range(1,pages+1):
             url = self.first_url + '&pn=%d'%page
-            yield scrapy.Request(url=url,callback=self.parse,headers=self.spider.headers)
+            yield scrapy.Request(url=url,
+                                 callback=self.parse,
+                                 cookies=cookies,
+                                 headers=self.spider.headers)
 
     def parse(self, response):
         """
@@ -40,12 +49,12 @@ class LG_Spider(CrawlSpider):
         :param response:
         :return:
         """
-        content = response.body
+        content = json.load(StringIO(response.body))
         if not content:
             return
         sel = Selector(response)
         joburl = 'https://www.lagou.com/jobs/'
-        for job in content['result']:
+        for job in content['content']["positionResult"]['result']:
             positionId = job["positionId"]
             if isinstance(positionId,int):
                 positionId = str(positionId)
@@ -72,8 +81,9 @@ class LG_Spider(CrawlSpider):
         :return:item
         """
         sel = Selector(response)
+        #print response.url
         job_item, company_item = response.meta['job_item'], response.meta['company_item']
-        company_item['introduction'] = ' '.join(sel.xpath('//ul[@class="c_feature]/li/text()').extract())
+        company_item['introduction'] = ' '.join(sel.xpath('//ul[@class="c_feature"]/li/text()').extract())
         company_item['address'] = ''.join(sel.xpath('//div[@class="work_addr"]/a/text()').extract())
         job_item['requirement'] = sel.xpath('//dd[@class="job_bt"]/p/text()').extract_first()
         job_item['company'] = company_item

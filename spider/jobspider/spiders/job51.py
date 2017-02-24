@@ -26,11 +26,18 @@ class Job51_Spider(CrawlSpider):
         p = re.compile(r'\d{1,}')
         urls = []
         pages = int(str(p.search(pages).group()))
-        for page in range(1,pages+1):
+        self.cookies = Job51Cfg.cookies()
+        self.spider.headers.update({'Cookie':self.cookies})
+        for page in range(1,2):
             url = self.first_url + '&curr_page=%d'%page
             urls.append(url)
         for url in urls:
-            yield scrapy.Request(url=url,callback=self.parse,headers=self.spider.headers)
+            print url
+            yield scrapy.Request(url=url,
+                                 callback=self.parse,
+                                 cookies= self.cookies,
+                                 headers=self.spider.headers
+                                 )
 
     def parse(self, response):
         """
@@ -45,15 +52,16 @@ class Job51_Spider(CrawlSpider):
         if not content:
             return
         sel = Selector(response)
-        for job in sel.xpath('//div[@class="dw_table"]/div[@class="el"]').extract():
-            title = job.xpath('/p[@class="t1"]/span/a/@title').extract()[0].lower()
+        for job in sel.xpath('//div[@class="dw_table"]/div[@class="el"]'):
+            print job
+            title = job.xpath('p/span/a/@title').extract_first().lower()
             if title.find('python') != -1:
-               url = job.xpath('/p[@class="t1"]/span/a/@href').extract()[0]
-               request = scrapy.Request(url=url,callback=self.parse_items,headers=self.spider.headers)
-               company_item, job_item = CompanyItem(), JobItem
-               company_item['name'] = job.xpath('/span[@class="t2"]/a/@href').extract_first()
-               company_item['homepage'] = job.xpath('/span[@class="t2"]/a/@title').extract_first()
-               job_item['pub_time'] = job.xpath('/span[@class="t5"]/text()').extract_first()
+               url = job.xpath('p/span/a/@href').extract_first()
+               request = scrapy.Request(url=url,callback=self.parse_items,cookies=self.cookies,headers=self.spider.headers)
+               company_item, job_item = CompanyItem(), JobItem()
+               company_item['name'] = job.xpath('span[@class="t2"]/a/@href').extract_first()
+               company_item['homepage'] = job.xpath('span[@class="t2"]/a/@title').extract_first()
+               job_item['pub_time'] = job.xpath('span[@class="t5"]/text()').extract_first()
                request.meta['company_item'] = company_item
                request.meta['job_item'] = job_item
                yield request
@@ -76,8 +84,8 @@ class Job51_Spider(CrawlSpider):
         item['welfare'] = ' '.join(sel.xpath('//p[@class="t2"]/span').extract())
         item['requirement'] = sel.xpath('//div[@class="bmsg job_msg inbox"]/text()').extract_first()
         item['website_id'] = 4
-        item['pub_time'] = company_item['pub_time']
         item['company'] = company_item
+        print item
         yield item
 
 
