@@ -9,4 +9,6 @@ By far, I use this to crawl jon information in order to get latest data.
 At first,you must add the project path into global environment variable of system
 
 
+In /etc/profile:
+set PYTHONPATH as your/path/to/Package
 
