@@ -35,6 +35,7 @@ class LG_Spider(CrawlSpider):
         self.spider.headers.update({'Cookie':cookies})
         for page in range(1,pages+1):
             url = self.first_url + '&pn=%d'%page
+            print url
             yield scrapy.Request(url=url,
                                  callback=self.parse,
                                  cookies=cookies,
@@ -87,6 +88,7 @@ class LG_Spider(CrawlSpider):
         company_item['address'] = ''.join(sel.xpath('//div[@class="work_addr"]/a/text()').extract())
         job_item['requirement'] = sel.xpath('//dd[@class="job_bt"]/p/text()').extract_first()
         job_item['company'] = company_item
+        print job_item
         yield job_item
 
 

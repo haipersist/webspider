@@ -6,6 +6,8 @@ from scrapy.crawler import Crawler,CrawlerRunner,CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
 
+
+
 class RunSpider(object):
     def __init__(self):
         self.process = CrawlerProcess(get_project_settings())
@@ -34,4 +36,9 @@ class RunSpider(object):
 
 if __name__ == "__main__":
     spider = RunSpider()
-    spider.runOneSpider('zhilian')
+    spider.runOneSpider('lagou')
+    print 'yes'
+
+
+
+

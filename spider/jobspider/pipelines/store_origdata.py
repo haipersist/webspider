@@ -11,6 +11,7 @@ import requests
 import datetime
 from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.baseclass.database import Database
+from webspider.baseclass.baseRedis import BaseRedis
 from webspider.utils.mylogger import MyLogger
 
 
@@ -57,11 +58,14 @@ class MySQLLoadPipeLine(object):
                 sql = 'select id,name from company where name="%s"'%company['name']
                 if not db.query(sql):
                     db.insert_by_dic('company',company)
+                    self.logger.info(' '.join([company['name'],u'Insert Success!'])
+
                 sql = 'select id from company where name="%s"'%company['name']
                 company = db.query(sql)[0]
                 try:
                     result['company_id'] = company['id']
                     db.insert_by_dic('jobs',result)
+                    self.logger.info(' '.join([result['title'], u'Insert Success!'])
                 except IndexError:
                     self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,result['company_name'))
 
@@ -89,6 +93,32 @@ class LoadOnlinePipeline(object):
         #when the spider is closed ,the method will be called
         #self.file.close()
         pass
+
+
+
+class RedisLoadPipeLine(object):
+    def __init__(self):
+        self.day = datetime.date.today().strftime("%Y-%m-%d")
+        # self.file = codecs.open('store_%s.html'%self.day,'w',encoding='utf8')
+
+    def to_dict(self, item):
+        result = {}
+        for key in item:
+            result[key] = item[key]
+            if isinstance(item[key], CompanyItem):
+                company = {}
+                for ele in result[key]:
+                    company[ele] = result[key][ele]
+                result[key] = company
+        return result
+
+    def process_item(self, item, spider):
+        result = self.to_dict(item)
+        redis = BaseRedis()
+        redis.rs.delete('latest_jobs')
+        if result['pub_time'] == self.day:
+            redis.set('latest_jobs',[result,0])
+
 
 
 
