@@ -15,8 +15,17 @@ class TestDb(unittest.TestCase):
 
     def test_insert(self):
         db = Database()
-        data = {'website':'liepin','homepage':'https://www.liepin.com'}
-        assert db.insert_by_dic('website',data)
+        data = {
+            'title':'python',
+            'welfare':'fwf',
+            'requirement':'wfw',
+            'link':'dwdw',
+            'website_id':3,
+            'pub_time':'2017-02-03',
+            'salary':'dwd',
+            'company_id':1,
+        }
+        assert db.insert_by_dic('jobs',data)
 
 
 

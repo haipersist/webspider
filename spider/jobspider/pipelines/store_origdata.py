@@ -15,6 +15,26 @@ from webspider.baseclass.baseRedis import BaseRedis
 from webspider.utils.mylogger import MyLogger
 
 
+
+
+def dict_decorator(method):
+    def to_dict(decorated_instance, item,spider):
+        result = {}
+        for key in item:
+            result[key] = item[key]
+            if isinstance(item[key], CompanyItem):
+                company = {}
+                for ele in result[key]:
+                    company[ele] = result[key][ele]
+                result[key] = company
+        method(decorated_instance,result,spider)
+
+    return to_dict
+
+
+
+
+
 class MySQLLoadPipeLine(object):
 
     def __init__(self):
@@ -23,17 +43,7 @@ class MySQLLoadPipeLine(object):
         self.today = self.day.strftime("%Y-%m-%d")
         self.logger = MyLogger('spider').logger
 
-    def to_dict(self,item):
-        result = {}
-        for key in item:
-            result[key] = item[key]
-            if isinstance(item[key],CompanyItem):
-                company = {}
-                for ele in result[key]:
-                    company[ele] = result[key][ele]
-                result[key] = company
-        return result
-
+    @dict_decorator
     def process_item(self, item, spider):
         """
         the method is mainly stores item data into mysql databases
@@ -48,26 +58,24 @@ class MySQLLoadPipeLine(object):
         :param spider:
         :return:
         """
-        result = self.to_dict(item)
         db = Database()
-        if isinstance(item,JobItem):
-            sql = 'select id from jobs where link="%s"'%result['link']
-            job = db.query(sql)
-            if not job:
-                company = result['company']
-                sql = 'select id,name from company where name="%s"'%company['name']
-                if not db.query(sql):
-                    db.insert_by_dic('company',company)
-                    self.logger.info(' '.join([company['name'],u'Insert Success!'])
-
-                sql = 'select id from company where name="%s"'%company['name']
-                company = db.query(sql)[0]
-                try:
-                    result['company_id'] = company['id']
-                    db.insert_by_dic('jobs',result)
-                    self.logger.info(' '.join([result['title'], u'Insert Success!'])
-                except IndexError:
-                    self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,result['company_name'))
+        print item
+        sql = 'select id from jobs where link="%s"'%item['link']
+        if not db.query(sql):
+            company = item['company']
+            sql = 'select id,name from company where name="%s"'%company['name']
+            if not db.query(sql):
+                db.insert_by_dic('company',company)
+                self.logger.info(' '.join([company['name'],u'Insert Success!']))
+            sql = 'select id from company where name="%s"'%company['name']
+            company = db.query(sql)[0]
+            try:
+                item['company_id'] = company['id']
+                item.pop('company')
+                db.insert_by_dic('jobs',item)
+                self.logger.info(' '.join([item['title'], u'Insert Success!']))
+            except IndexError:
+                self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,result['company_name']))
 
         return item
 
@@ -79,10 +87,8 @@ class LoadOnlinePipeline(object):
         self.day = datetime.date.today().strftime("%Y-%m-%d")
         #self.file = codecs.open('store_%s.html'%self.day,'w',encoding='utf8')
         
+    @dict_decorator
     def process_item(self, item, spider):
-        result = {}
-        for key in item:
-            result[key] = item[key]
         #line = json.dumps(result,ensure_ascii=False) + "\n"
         #self.file.write(line)
         auth = ('haibo_persist','******')
@@ -101,25 +107,11 @@ class RedisLoadPipeLine(object):
         self.day = datetime.date.today().strftime("%Y-%m-%d")
         # self.file = codecs.open('store_%s.html'%self.day,'w',encoding='utf8')
 
-    def to_dict(self, item):
-        result = {}
-        for key in item:
-            result[key] = item[key]
-            if isinstance(item[key], CompanyItem):
-                company = {}
-                for ele in result[key]:
-                    company[ele] = result[key][ele]
-                result[key] = company
-        return result
-
+    @dict_decorator
     def process_item(self, item, spider):
-        result = self.to_dict(item)
         redis = BaseRedis()
         redis.rs.delete('latest_jobs')
-        if result['pub_time'] == self.day:
-            redis.set('latest_jobs',[result,0])
-
-
-
+        if item['pub_time'] == self.day:
+            redis.set('latest_jobs',[item,0])
 
 

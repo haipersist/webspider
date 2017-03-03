@@ -109,7 +109,7 @@ FILES_EXPIRES = 50
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     #'house.pipelines.down_image.MyImagePipeline',
-    #'jobspider.pipelines.store_origdata.MySQLLoadPipeLine':800,
+    'webspider.spider.jobspider.pipelines.store_origdata.MySQLLoadPipeLine':800,
 }
 
 LOG_LEVEL = 'INFO'

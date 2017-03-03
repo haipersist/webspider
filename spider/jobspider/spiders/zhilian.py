@@ -50,7 +50,7 @@ class ZL_Spider(CrawlSpider):
                request = scrapy.Request(url=url,callback=self.parse_items,headers=self.spider.headers)
                item = CompanyItem()
                item['name'] = job.xpath('tr/td[@class="gsmc"]/a/text()').extract_first()
-               item['homepage'] = job.xpath('tr/td[@class="gsmc"]/a/@href').extract_first()
+               #item['homepage'] = job.xpath('tr/td[@class="gsmc"]/a/@href').extract_first()
                request.meta['company_item'] = item
                yield request
             else:
@@ -76,7 +76,6 @@ class ZL_Spider(CrawlSpider):
         item['website_id'] = 3
         item['pub_time'] = sel.xpath('//span[@id="span4freshdate"]/text()').extract_first()
         item['company'] = company_item
-        print item
         yield item
 
 
