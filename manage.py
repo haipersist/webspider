@@ -9,8 +9,10 @@ manager = Manager(Flask(__name__))
 
 
 @manager.command
-def createEnv():
+def initenv():
     init_env()
+
+
 
 @manager.command
 def runspiders():
@@ -19,12 +21,15 @@ def runspiders():
     spider.runMulSpider(websites)
 
 
+
 @manager.option('-n','--name',dest='name',default=None)
 def runsinglespider(name):
     if name is None:
         print 'print spider name'
     spider = RunSpider()
     spider.runOneSpider(name)
+
+
 
 
 

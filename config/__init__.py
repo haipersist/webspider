@@ -23,4 +23,6 @@ def init_env():
     """
     os.environ.setdefault('SPIDERPATH',SPIDERPATH)
     sys.path.append(SPIDERPATH)
+    print os.environ.get("SPIDERPATH")
     os.environ.setdefault('EMAIL',EMAIL_VAR)
+    print os.environ.get("EMAIL")

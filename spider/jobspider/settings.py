@@ -110,6 +110,7 @@ FILES_EXPIRES = 50
 ITEM_PIPELINES = {
     #'house.pipelines.down_image.MyImagePipeline',
     'webspider.spider.jobspider.pipelines.store_origdata.MySQLLoadPipeLine':800,
+    #'webspider.spider.jobspider.pipelines.store_origdata.RedisLoadPipeLine':900,
 }
 
 LOG_LEVEL = 'INFO'

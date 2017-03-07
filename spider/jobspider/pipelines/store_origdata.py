@@ -6,30 +6,16 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 import json
-import codecs
+import cPickle
 import requests
 import datetime
 from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.baseclass.database import Database
 from webspider.baseclass.baseRedis import BaseRedis
 from webspider.utils.mylogger import MyLogger
+from webspider.config.websetting import auth
+from webspider.utils.dict_decorator import dict_decorator
 
-
-
-
-def dict_decorator(method):
-    def to_dict(decorated_instance, item,spider):
-        result = {}
-        for key in item:
-            result[key] = item[key]
-            if isinstance(item[key], CompanyItem):
-                company = {}
-                for ele in result[key]:
-                    company[ele] = result[key][ele]
-                result[key] = company
-        method(decorated_instance,result,spider)
-
-    return to_dict
 
 
 
@@ -58,24 +44,38 @@ class MySQLLoadPipeLine(object):
         :param spider:
         :return:
         """
-        db = Database()
         print item
+        db = Database()
         sql = 'select id from jobs where link="%s"'%item['link']
         if not db.query(sql):
             company = item['company']
             sql = 'select id,name from company where name="%s"'%company['name']
+            redis = BaseRedis()
             if not db.query(sql):
                 db.insert_by_dic('company',company)
-                self.logger.info(' '.join([company['name'],u'Insert Success!']))
+                self.logger.info(' '.join([company['name'],u'Insert Company into Mysql Success!']))
+                redis.rs.delete('new_company')
+                redis.rs.set('new_company',[company['name'],])
+                self.logger.info(' '.join([company['name'], u'Insert Company into Redis Success!']))
+
             sql = 'select id from company where name="%s"'%company['name']
             company = db.query(sql)[0]
             try:
                 item['company_id'] = company['id']
                 item.pop('company')
+                print item
                 db.insert_by_dic('jobs',item)
-                self.logger.info(' '.join([item['title'], u'Insert Success!']))
+                self.logger.info(' '.join([item['title'], u'Insert Job into Mysql Success!']))
+                redis.rs.delete('latest_jobs')
+                if item['pub_time'] == self.day:
+                    # serizilier,in order to get original structure from redis.
+                    item = cPickle.dumps(item)
+                    redis.set('latest_jobs', [item, ])
             except IndexError:
-                self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,result['company_name']))
+                self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,item['title']))
+            except Exception,e:
+                self.logger.error(u'%s::名称:%s没有正确添加。请检查.%s\n' % (self.today,item['title'],str(e)))
+
 
         return item
 
@@ -91,8 +91,7 @@ class LoadOnlinePipeline(object):
     def process_item(self, item, spider):
         #line = json.dumps(result,ensure_ascii=False) + "\n"
         #self.file.write(line)
-        auth = ('haibo_persist','******')
-        r = requests.post('http://dailyblog.applinzi.com/api/onlines/',data=result, auth=auth)
+        r = requests.post('http://dailyblog.applinzi.com/api/onlines/',data=item, auth=auth)
         return item
 
     def close_spider(self,spider):
@@ -107,11 +106,20 @@ class RedisLoadPipeLine(object):
         self.day = datetime.date.today().strftime("%Y-%m-%d")
         # self.file = codecs.open('store_%s.html'%self.day,'w',encoding='utf8')
 
-    @dict_decorator
     def process_item(self, item, spider):
+        """
+        the redis store the jobs pubed in the cur day.
+        :param item:
+        :param spider:
+        :return:
+        """
+        print item
         redis = BaseRedis()
         redis.rs.delete('latest_jobs')
         if item['pub_time'] == self.day:
-            redis.set('latest_jobs',[item,0])
+            #serizilier,in order to get original structure from redis.
+            item = cPickle.dumps(item)
+            redis.set('latest_jobs',[item,])
 
+        return item
 

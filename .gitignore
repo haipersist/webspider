@@ -9,4 +9,5 @@ dbsetting.py
 envvar.py
 websetting.py
 *.pyc
+*.log
 

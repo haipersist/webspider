@@ -60,7 +60,7 @@ class Job51_Spider(CrawlSpider):
                request = scrapy.Request(url=url,callback=self.parse_items,cookies=self.cookies,headers=self.spider.headers)
                company_item, job_item = CompanyItem(), JobItem()
                company_item['name'] = job.xpath('span[@class="t2"]/a/@href').extract_first()
-               company_item['homepage'] = job.xpath('span[@class="t2"]/a/@title').extract_first()
+               #company_item['homepage'] = job.xpath('span[@class="t2"]/a/@title').extract_first()
                job_item['pub_time'] = job.xpath('span[@class="t5"]/text()').extract_first()
                request.meta['company_item'] = company_item
                request.meta['job_item'] = job_item

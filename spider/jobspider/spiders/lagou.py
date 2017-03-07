@@ -33,7 +33,7 @@ class LG_Spider(CrawlSpider):
         #scrapy cookies must be dict.必须是字典形式.这和requests模块有区别。
         cookies = LgCfg.cookies()
         self.spider.headers.update({'Cookie':cookies})
-        for page in range(1,pages+1):
+        for page in range(1,2):
             url = self.first_url + '&pn=%d'%page
             print url
             yield scrapy.Request(url=url,
@@ -65,11 +65,11 @@ class LG_Spider(CrawlSpider):
             job_item['pub_time'] = job["createTime"]
             job_item['salary'] = job['salary']
             job_item['title'] = job["positionName"]
-            job_item['link'] = joburl
+            job_item['link'] = url
             job_item['website_id'] = 1
-            job_item['welfare'] = job["companyLabelList"]
+            #job_item['welfare'] = list(job["companyLabelList"])
             company_item['name'] = job['companyFullName']
-            company_item['homepage'] =  'http://www.lagou.com/gongsi/'+str(job['companyId'])+'.html'
+            #company_item['homepage'] =  'http://www.lagou.com/gongsi/'+str(job['companyId'])+'.html'
             request.meta['company_item'] = company_item
             request.meta['job_item'] = job_item
             yield request
@@ -86,9 +86,10 @@ class LG_Spider(CrawlSpider):
         job_item, company_item = response.meta['job_item'], response.meta['company_item']
         company_item['introduction'] = ' '.join(sel.xpath('//ul[@class="c_feature"]/li/text()').extract())
         company_item['address'] = ''.join(sel.xpath('//div[@class="work_addr"]/a/text()').extract())
-        job_item['requirement'] = sel.xpath('//dd[@class="job_bt"]/p/text()').extract_first()
+        job_item['welfare'] = sel.xpath('//dd[@class="job-advantage"]/p/text()').extract_first()
+        job_item['requirement'] = ' '.join(sel.xpath('//dd[@class="job_bt"]/div/p/text()').extract())
+        print ' '.join(sel.xpath('//dd[@class="job_bt"]/div/p/text()').extract())
         job_item['company'] = company_item
-        print job_item
         yield job_item
 
 

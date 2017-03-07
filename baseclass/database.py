@@ -81,3 +81,8 @@ class Database():
 
 
 
+if __name__ == "__main__":
+    db = Database()
+    item = {'salary': u'6k-10k', 'requirement': '', 'pub_time': u'2017-03-07 11:42:19', 'title': u'Python', 'website_id': 1, 'company_id': 76L, 'link': 'https://www.lagou.com/jobs/1955717.html', 'welfare': "[u'\\u8282\\u65e5\\u793c\\u7269', u'\\u6280\\u80fd\\u57f9\\u8bad', u'\\u80a1\\u7968\\u671f\\u6743', u'\\u4e13\\u9879\\u5956\\u91d1']"}
+    item['welfare'] = ''
+    db.insert_by_dic('jobs', item)
