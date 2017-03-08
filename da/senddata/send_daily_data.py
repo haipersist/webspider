@@ -1,45 +1,48 @@
-import datetime
-from baseclass.send_email import SendMail
-from baseclass.utils.data2html import data2html
-from baseclass.utils.store_data import Job_Data
-from gen_data.gen_daily_job import get_latest_data
-from gen_data.get_good_job import  GoodJob
-
-def send_daily_data():
-    jobdata = get_latest_data()
-    store_job = Job_Data(store_type='redis')
-    store_job.store(jobdata)
-    result = data2html(jobdata,'job.tpl')
-    mail = SendMail('Job')
-    try:
-        mail.send_email(msghtml=result)
-    except:
-        mail.send_email(msghtml=result)
+from datetime import date
+from webspider.baseclass.send_email import Mail
+from webspider.utils.data2html import data2html
+from webspider.da.GetDailyJobs import DailyJob
+from webspider.da.GetNewCompany import NewCompany
 
 
+class SendData(object):
 
-def send_good_job():
-    gjob = GoodJob()
-    renderg = gjob.get_renderg()
-    huaxia = gjob.get_huaxia()
-    data = []
-    if renderg:
-        data.extend(renderg)
-    if huaxia:
-        data.extend(huaxia)
-    if data:
-        result = data2html(data,'job.tpl')
-        mail = SendMail('Job')
-        try:
-            mail.send_email(msghtml=result)
-        except:
-            mail.send_email(msghtml=result)
-    else:
-        print '%s:No job info about the companies' % datetime.date.today().strftime("%Y-%m-%d")
+    def __init__(self):
+        self.mail = Mail('myself')
+        self.day = date.today().strftime("%Y-%m-%d")
+
+    def send_daily_job(self,day=None):
+        day = self.day if day is None else day
+        job = DailyJob(day)
+        total = job.total
+        result = job.get_daily_job()[0:50]
+        #convert job list into html
+        html = data2html('job.tpl',data=result,total=total)
+        print html
+        self.mail.send_email(msghtml=html)
+
+    def send_daily_company(self):
+        com = NewCompany()
+        companies = com.daily_new_company
+        if len(companies) != 0:
+            html = data2html('company.tpl', data=companies, total=len(companies))
+        else:
+            html='<h1>No new company!</h1>'
+        self.mail.send_email(msghtml=html)
+
+    def exec_all(self):
+        for item in dir(self):
+            if item.startswith('send'):
+                apply(getattr(s, item))
+
 
 
 if __name__ == "__main__":
-    send_daily_data()
-    send_good_job()
+    s = SendData()
+    for item in dir(s):
+        if item.startswith('send'):
+            print item
+            #print apply(getattr(s,item))
+
 
 

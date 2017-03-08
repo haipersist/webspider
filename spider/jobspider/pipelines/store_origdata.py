@@ -44,7 +44,6 @@ class MySQLLoadPipeLine(object):
         :param spider:
         :return:
         """
-        print item
         db = Database()
         sql = 'select id from jobs where link="%s"'%item['link']
         if not db.query(sql):
@@ -54,8 +53,7 @@ class MySQLLoadPipeLine(object):
             if not db.query(sql):
                 db.insert_by_dic('company',company)
                 self.logger.info(' '.join([company['name'],u'Insert Company into Mysql Success!']))
-                redis.rs.delete('new_company')
-                redis.rs.set('new_company',[company['name'],])
+                redis.set('new_company',[company['name']])
                 self.logger.info(' '.join([company['name'], u'Insert Company into Redis Success!']))
 
             sql = 'select id from company where name="%s"'%company['name']
@@ -63,17 +61,16 @@ class MySQLLoadPipeLine(object):
             try:
                 item['company_id'] = company['id']
                 item.pop('company')
-                print item
                 db.insert_by_dic('jobs',item)
-                self.logger.info(' '.join([item['title'], u'Insert Job into Mysql Success!']))
-                redis.rs.delete('latest_jobs')
-                if item['pub_time'] == self.day:
+                self.logger.info(' '.join([item['title'], u'Insert Job into Mysql Success from %s!'%item['website_id']]))
+                day = item['pub_time'].split(' ')[0] if ':' in item['pub_time'] else item['pub_time']
+                if cmp(day,self.today) == 0:
                     # serizilier,in order to get original structure from redis.
-                    item = cPickle.dumps(item)
-                    redis.set('latest_jobs', [item, ])
-            except IndexError:
-                self.logger.error(u'%s::公司名称:%s没有正确添加。请检查.\n' % (self.today,item['title']))
+                    data = cPickle.dumps(item)
+                    redis.set('latest_jobs', [data])
+                    self.logger.info(' '.join([item['title'], u'Insert Job into Redis Success!']))
             except Exception,e:
+                print item
                 self.logger.error(u'%s::名称:%s没有正确添加。请检查.%s\n' % (self.today,item['title'],str(e)))
 
 
@@ -113,7 +110,7 @@ class RedisLoadPipeLine(object):
         :param spider:
         :return:
         """
-        print item
+        #print item
         redis = BaseRedis()
         redis.rs.delete('latest_jobs')
         if item['pub_time'] == self.day:

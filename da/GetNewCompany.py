@@ -19,7 +19,8 @@ from webspider.baseclass.database import Database
 
 class NewCompany(object):
 
-    def get_daily_company(self):
+    @property
+    def daily_new_company(self):
         redis = BaseRedis()
         return redis.get('new_company',type='list')
 

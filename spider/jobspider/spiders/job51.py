@@ -8,7 +8,7 @@ import scrapy
 from webspider.baseclass.base_spider import Base_Spider
 from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.config.websetting import Job51Cfg
-
+from datetime import date
 
 class Job51_Spider(CrawlSpider):
     name = '51job'
@@ -28,7 +28,7 @@ class Job51_Spider(CrawlSpider):
         pages = int(str(p.search(pages).group()))
         self.cookies = Job51Cfg.cookies()
         self.spider.headers.update({'Cookie':self.cookies})
-        for page in range(1,2):
+        for page in range(1,5):
             url = self.first_url + '&curr_page=%d'%page
             urls.append(url)
         for url in urls:
@@ -53,15 +53,16 @@ class Job51_Spider(CrawlSpider):
             return
         sel = Selector(response)
         for job in sel.xpath('//div[@class="dw_table"]/div[@class="el"]'):
-            print job
             title = job.xpath('p/span/a/@title').extract_first().lower()
             if title.find('python') != -1:
                url = job.xpath('p/span/a/@href').extract_first()
                request = scrapy.Request(url=url,callback=self.parse_items,cookies=self.cookies,headers=self.spider.headers)
                company_item, job_item = CompanyItem(), JobItem()
-               company_item['name'] = job.xpath('span[@class="t2"]/a/@href').extract_first()
-               #company_item['homepage'] = job.xpath('span[@class="t2"]/a/@title').extract_first()
+               company_item['name'] = job.xpath('span[@class="t2"]/a/@title').extract_first()
+               #company_item['address'] = job.xpath('span[@class="t2"]/a/@title').extract_first()
                job_item['pub_time'] = job.xpath('span[@class="t5"]/text()').extract_first()
+               year = str(date.today().year)
+               job_item['pub_time'] = year + '-' + job_item['pub_time']
                request.meta['company_item'] = company_item
                request.meta['job_item'] = job_item
                yield request
@@ -77,16 +78,20 @@ class Job51_Spider(CrawlSpider):
         item = response.meta['job_item']
         company_item = response.meta['company_item']
         company_item['introduction'] = sel.xpath('//div[@class="tmsg inbox"]/text()').extract_first()
-        company_item['address'] = sel.xpath('//p[@class="fp"]/text()').extract_first()
+        company_item['address'] = sel.xpath('//p[@class="fp"]').extract_first()
         item['salary'] = sel.xpath('//div[@class="cn"]/strong/text()').extract_first()
         item['title'] = sel.xpath('//div[@class="cn"]/h1/@title').extract_first()
         item['link'] = response.url
-        item['welfare'] = ' '.join(sel.xpath('//p[@class="t2"]/span').extract())
-        item['requirement'] = sel.xpath('//div[@class="bmsg job_msg inbox"]/text()').extract_first()
+        item['welfare'] = ' '.join(sel.xpath('//p[@class="t2"]/span/text()').extract())
+        item['requirement'] = ''.join(sel.xpath('//div[@class="bmsg job_msg inbox"]/text()').extract())
+        if item['requirement'] is None:
+            item['requirement'] = ''.join(sel.xpath('//div[@class="bmsg job_msg inbox"]/p/text()').extract())
+        #print item['requirement']
         item['website_id'] = 4
         item['company'] = company_item
-        print item
         yield item
+
+
 
 
 

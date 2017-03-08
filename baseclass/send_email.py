@@ -18,14 +18,15 @@ from webspider.utils.get_project_setting import get_project_setting
 class Mail():
 
     def __init__(self,obj):
+        self.setting = get_project_setting()
         self.obj =obj
-        self.path = os.environ.get('SPIDERPATH')
+        self.path = self.setting['SPIDERPATH']
         self._set_server()
         self._set_config()
 
     def _set_server(self):
-        setting = get_project_setting()
-        self.email_var = setting['EMAIL']
+        self.email_var = self.setting['EMAIL']
+        #print self.email_var
         self.send_server = self.email_var['EMAIL_HOST']
         self.user = self.email_var['EMAIL_HOST_USER']
         self.port = self.email_var['EMAIL_PORT']
@@ -41,7 +42,7 @@ class Mail():
         self.to_addrs =ast.literal_eval(self.cfg.get(self.obj,'addrs'))
         self.subject = self.cfg.get(self.obj,'subject')
 
-    def send_email(self,msgtxt=None,filename=None,msghtml=None):
+    def send_email(self,filename=None,msghtml=None,msgtxt=None):
         ms = MIMEMultipart()
         Addrs = [email.utils.formataddr((False,addr)) for addr in self.to_addrs]
         ms['To'] = ','.join(Addrs)
@@ -49,19 +50,17 @@ class Mail():
         ms['Subject'] = self.subject
         ms['Date'] = email.utils.formatdate(time.time(),True)
         #ms.attach(MIMEText(self.txt))
-        if msgtxt:
-            ms.attach(MIMEText(msgtxt,'plain','utf8'))
+        if msghtml:
+            ms.attach(MIMEText(msghtml, 'html', 'utf8'))
 
-        if msghtml is not None:
-            ms.attach(MIMEText(msghtml,'html','utf8'))
-   
         if filename:
-            attat = MIMEText(open(filename,'rb').read(),'base64','utf8')
+            attat = MIMEText(file(filename, 'rb').read(), 'base64', 'utf8')
             attat["Content-Type"] = 'application/octet-stream'
-            attat['Content-Disposition'] = 'attachment;filename="%s" '%os.path.basename(filename)
+            attat['Content-Disposition'] = 'attatcnment;filename="%s" ' % filename
             ms.attach(attat)
-            #print ms
 
+        if msgtxt:
+            ms.attach(MIMEText(msgtxt, 'plain', 'utf8'))
         try:
             self.smtp = smtplib.SMTP(self.send_server)
             #self.smtp.connect(self.send_server)
@@ -76,7 +75,27 @@ class Mail():
 
 if __name__=="__main__":
     S_mail = Mail('myself')
-    S_mail.send_email(msgtxt='send_email')
+    print os.environ.keys()
+    html = """
+        <h3> 2017-03-08</h3>
+    <table cellpadding="1" cellspacing="0" width="100%" border="1">
+        <tr bgcolor="silver">
+        <th align=center>id</th>
+        <th align=center>title</th>
+        <th align=center>salary</th>
+        <th align=center>link</th>
+        </tr>
+        <tr>
+            <td align=center>1</td>
+            <td align=center>python</td>
+            <td align=center>8001</td>
+            <td align=center>htm</td>
+        </tr>
+    </table>
+
+
+    """
+    S_mail.send_email(msghtml=html)
 
 
 

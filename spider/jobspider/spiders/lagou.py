@@ -33,9 +33,9 @@ class LG_Spider(CrawlSpider):
         #scrapy cookies must be dict.必须是字典形式.这和requests模块有区别。
         cookies = LgCfg.cookies()
         self.spider.headers.update({'Cookie':cookies})
-        for page in range(1,2):
+        for page in range(1,pages+1):
             url = self.first_url + '&pn=%d'%page
-            print url
+            #print url
             yield scrapy.Request(url=url,
                                  callback=self.parse,
                                  cookies=cookies,
@@ -88,7 +88,6 @@ class LG_Spider(CrawlSpider):
         company_item['address'] = ''.join(sel.xpath('//div[@class="work_addr"]/a/text()').extract())
         job_item['welfare'] = sel.xpath('//dd[@class="job-advantage"]/p/text()').extract_first()
         job_item['requirement'] = ' '.join(sel.xpath('//dd[@class="job_bt"]/div/p/text()').extract())
-        print ' '.join(sel.xpath('//dd[@class="job_bt"]/div/p/text()').extract())
         job_item['company'] = company_item
         yield job_item
 

@@ -68,16 +68,12 @@ class BaseRedis():
 def test():
     client=BaseRedis()
     #client.rs.delete('qw')
-    data = {'s':4,'d':{'a':5}}
-    import cPickle
-    data = cPickle.dumps(data)
-    client.set('qw',[data,])
-    #client.set('oww',[12,{'s':3}])
-    for item in client.get('qw',type='list'):
-        print cPickle.loads(item)
-    print client.rs.llen('qw')
-    client.rs.delete('lina')
-    print  client.get('ow')
+    client.set('test',['sq'])
+    print len(client.get('latest_jobs',type='list'))
+
+    print client.rs.llen('new_company')
+
+
 
 
 

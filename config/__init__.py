@@ -25,4 +25,4 @@ def init_env():
     sys.path.append(SPIDERPATH)
     print os.environ.get("SPIDERPATH")
     os.environ.setdefault('EMAIL',EMAIL_VAR)
-    print os.environ.get("EMAIL")
+    #print os.environ.get("EMAIL")
