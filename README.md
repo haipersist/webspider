@@ -17,12 +17,12 @@ set PYTHONPATH as your/path/to/Package
 ##1、MySQL：
 有几张表：
 1、 company。保存公司名称，为unique索引；
-2、 website.
-3、 职位基本信息，jobs,公司名称,website是外键；
+2、 website.name of websites.
+3、 jobs,职位基本信息，公司名称,website是外键；
 
 
 ##2、Redis：
-Redis用来保存每个公司的最新职位，每天进行更新，key为公司名称。如果遇到一个公司发布了不同的职位，且时间相同，那也要随机选一个保存。
+Redis用来保存每个公司的最新职位，每天进行更新，key为公司名称。
 要设置更新机制，如果一个公司的职位在一个月内没有更新，也要删除该职位信息。
 
 ##3、项目结构

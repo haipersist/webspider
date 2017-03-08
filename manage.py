@@ -1,3 +1,18 @@
+#-*- coding:utf-8 -*-
+
+"""
+the python file is used to start spider.In order to execute it by
+using command.I use Flask-Scripts,when I learned Flask and wrote my blog
+I found it is very convenient for this usage.
+If you are not familiar with it.you can read the official document
+about it.It's very easy to use.
+
+   Copyright:Haibo wang. 2017
+
+"""
+
+
+
 import os
 from webspider.config import init_env
 from webspider.spider.runspider import RunSpider
