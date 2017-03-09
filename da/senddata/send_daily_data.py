@@ -33,16 +33,13 @@ class SendData(object):
     def exec_all(self):
         for item in dir(self):
             if item.startswith('send'):
-                apply(getattr(s, item))
+                apply(getattr(self, item))
 
 
 
 if __name__ == "__main__":
     s = SendData()
-    for item in dir(s):
-        if item.startswith('send'):
-            print item
-            #print apply(getattr(s,item))
+    s.send_daily_job()
 
 
 

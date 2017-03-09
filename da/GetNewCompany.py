@@ -31,7 +31,7 @@ class NewCompany(object):
         pass
 
 
-
+print NewCompany().daily_new_company
 
 
 

@@ -53,7 +53,8 @@ class MySQLLoadPipeLine(object):
             if not db.query(sql):
                 db.insert_by_dic('company',company)
                 self.logger.info(' '.join([company['name'],u'Insert Company into Mysql Success!']))
-                redis.set('new_company',[company['name']])
+                data = cPickle.dumps(company)
+                redis.set('new_company',[data])
                 self.logger.info(' '.join([company['name'], u'Insert Company into Redis Success!']))
 
             sql = 'select id from company where name="%s"'%company['name']
