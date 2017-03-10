@@ -3,7 +3,7 @@ from webspider.baseclass.send_email import Mail
 from webspider.utils.data2html import data2html
 from webspider.da.GetDailyJobs import DailyJob
 from webspider.da.GetNewCompany import NewCompany
-
+from webspider.utils.get_project_setting import Settings
 
 class SendData(object):
 
@@ -15,7 +15,7 @@ class SendData(object):
         day = self.day if day is None else day
         job = DailyJob(day)
         total = job.total
-        result = job.get_daily_job()[0:50]
+        result = job.get_daily_job()[0:30]
         #convert job list into html
         html = data2html('job.tpl',data=result,total=total)
         print html

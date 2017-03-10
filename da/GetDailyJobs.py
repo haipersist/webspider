@@ -30,7 +30,7 @@ class DailyJob(object):
         #    result = self.redis.get('latest_jobs',type='list')
         #    if result:
         #        return [cPickle.loads(item) for item in result]
-        sql = 'select * from jobs where load_time>="%s 00:00:00"'%self.day
+        sql = 'select * from jobs where pub_time>="%s 00:00:00"'%self.day
         return self.db.query(sql)
 
     @property
