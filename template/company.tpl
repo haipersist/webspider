@@ -13,7 +13,7 @@
     <% i += 1%>
     <tr>
         <td align=center>${i}</td>
-        <td align=center>${item['name'}</td>
+        <td align=center></td>
     </tr>
 %endfor
 </table>
