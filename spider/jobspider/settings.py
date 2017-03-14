@@ -80,6 +80,7 @@ and the process_response() method of each middleware will be invoked in decreasi
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware':None,
    'webspider.spider.jobspider.middlewares.UserAgentMiddleware.MyUserAgentDownloaderMiddleware': 400,
+   'webspider.spider.jobspider.middlewares.ProxyMiddleware.ProxyMiddleware': 543,
     # add proxy ip
     }
 
