@@ -30,7 +30,7 @@ class DailyJob(object):
         #    result = self.redis.get('latest_jobs',type='list')
         #    if result:
         #        return [cPickle.loads(item) for item in result]
-        sql = 'select * from jobs where pub_time>="%s 00:00:00"'%self.day
+        sql = 'select * from jobs where load_time>="%s 00:00:00"'%self.day
         return self.db.query(sql)
 
     @property
@@ -45,7 +45,7 @@ class DailyJob(object):
             count = self.redis.rs.llen('latest_jobs')
             if count != 0:
                 return count
-        sql = 'select count(id) as total from jobs where pub_time="%s"' % self.day
+        sql = 'select count(id) as total from jobs where load_time="%s"' % self.day
         count = self.db.query(sql)[0]['total']
         if not isinstance(count,int):
             count = int(count)

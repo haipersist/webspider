@@ -14,8 +14,8 @@ class SendData(object):
     def send_daily_job(self,day=None):
         day = self.day if day is None else day
         job = DailyJob(day)
-        total = job.total
         result = job.get_daily_job()[0:30]
+        total = len(job.get_daily_job())
         #convert job list into html
         html = data2html('job.tpl',data=result,total=total)
         print html
