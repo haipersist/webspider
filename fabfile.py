@@ -13,9 +13,12 @@ def push(msg):
 
 
 def crawl():
-    with lcd(os.path.join(os.path.abspath('.'))):
+    with lcd(os.path.abspath('.')):
         local('bash run.sh')
 
 
-
+def addproxy():
+    targetpath = os.path.join(os.path.join(os.path.abspath('.'),'utils'),'IPProxyPool')
+    with lcd(targetpath):
+        local('nohup python IPProxy.py &')
 
