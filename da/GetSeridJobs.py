@@ -30,20 +30,33 @@ class SeridJob(object):
         self.start = (datetime.strptime(self.end,"%Y-%m-%d") - timedelta(days=serid)).strftime("%Y-%m-%d")
 
     def get_serid_job(self):
-        sql = 'select * from jobs where pub_time BETWEEN "%s" and "%s"' % (self.start,self.end)
+        sql = "select * from jobs where date_format(load_time,'%Y-%m-%d') BETWEEN '%s' and '%s'" % (self.start,self.end)
         return self.db.query(sql)
 
     def get_serid_total(self):
-        sql = 'select count(id) as total from jobs where pub_time BETWEEN "%s" and "%s"' % (self.start,self.end)
+        sql = "select count(id) as total from jobs where date_format(load_time,'%Y-%m-%d') BETWEEN '%s' and '%s'" % (self.start,self.end)
         count = self.db.query(sql)[0]['total']
         if not isinstance(count, int):
             count = int(count)
         return count
 
     def get_serid_job_groupby(self,category):
-        sql = 'select category,count(id) as num from jobs GROUP BY %s' % category
-        count = self.db.query(sql)
-        return count
+        if category=='website':
+            sql = "select count(a.id) as num,b.website as %s from jobs a join website b " \
+                  "on a.website_id=b.id group by a.website_id" % category
+        elif category == 'company':
+            sql = "select count(a.id) as num,b.name as %s from jobs a join company b " \
+                  "on a.company_id=b.id group by a.company_id" % category
+        else:
+            if category == 'load_time':
+                category = 'date_format(%s,'%category+'"%Y-%m-%d")'
+            sql = 'select %s,count(id) as num from jobs GROUP BY %s'%(category,category)
+        result = self.db.query(sql)
+        data = {}
+        for item in result:
+            data.setdefault(item[category],item['num'])
+        return data
+
 
 
 
@@ -53,6 +66,7 @@ class SeridJob(object):
 
 
 if __name__ == "__main__":
-    day = "2017-01-02"
-    import time
-    print datetime.strptime(day,"%Y-%m-%d") - timedelta(days=1)
+    serid = SeridJob()
+    print len(serid.get_serid_job_groupby('company'))
+
+

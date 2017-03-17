@@ -60,10 +60,9 @@ def reducer(item):
 if __name__ == "__main__":
     mapreduce = MapReduce(mapper,reducer)
     import os
-    logfile1 = os.environ.get("SPIDERPATH") + '/logs/spiderInfo-2017-03-08.log'
-    logfile2 = os.environ.get("SPIDERPATH") + '/logs/spiderInfo-2017-03-09.log'
-    logfile3 = os.environ.get("SPIDERPATH") + '/logs/spiderInfo-2017-03-10.log'
-    result = mapreduce([logfile1,logfile2,logfile3])
+    import glob
+    logpath = os.path.join(os.environ.get("SPIDERPATH"),'logs')
+    result = mapreduce(glob.glob(logpath))
     print result
 
 

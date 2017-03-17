@@ -4,6 +4,8 @@ import MySQLdb
 import cPickle as pickle
 from webspider.utils.get_project_setting import get_project_setting
 
+
+
 class Database():
 
     def __init__(self):
