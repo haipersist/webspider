@@ -7,6 +7,7 @@ import os
 import sys
 from .dbsetting import DATABASES
 from .envvar import SPIDERPATH,EMAIL,EMAIL_VAR
+from .websetting import AUTH
 
 
 

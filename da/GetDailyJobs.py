@@ -15,6 +15,7 @@ import cPickle
 from datetime import date
 from webspider.baseclass.baseRedis import BaseRedis
 from webspider.baseclass.database import Database
+from webspider.utils.get_project_setting import get_project_setting
 
 
 class DailyJob(object):
@@ -48,8 +49,28 @@ class DailyJob(object):
         return count
 
 
-
-
+def load_online_job():
+    import requests
+    day = date.today().strftime("%Y-%m-%d")
+    job = DailyJob(day=day)
+    result = job.get_daily_job()
+    setting = get_project_setting()
+    auth = setting['AUTH']
+    for item in result:
+        item.pop("id")
+        item['pub_time'] = item['pub_time'].strftime("%Y-%m-%d")
+        item['website'] = item['website_id']
+        item.pop("website_id")
+        item['company'] = item['company_id']
+        item.pop('company_id')
+        item.pop('load_time')
+        try:
+            r = requests.post('http://dailyblog.applinzi.com/api/jobs/',
+                              data=item,
+                              auth=auth)
+        except Exception, e:
+            print str(e)
+            continue
 
 
 

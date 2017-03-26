@@ -19,6 +19,8 @@ from webspider.spider.runspider import RunSpider
 from flask.ext.script import Manager
 from flask import Flask
 from webspider.da.senddata.send_daily_data import SendData
+from webspider.da.GetNewCompany import load_online_company
+from webspider.da.GetDailyJobs import load_online_job
 
 manager = Manager(Flask(__name__))
 
@@ -34,7 +36,10 @@ def runspiders():
     spider = RunSpider()
     spider.runMulSpider('zhilian','lagou','51job')
 
-
+@manager.command
+def load_online_data():
+    load_online_company()
+    load_online_job()
 
 @manager.option('-n','--name',dest='name',default=None)
 def runsinglespider(name):

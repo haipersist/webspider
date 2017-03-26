@@ -28,7 +28,7 @@ class BaseRedis():
                                      #password=self.password,
                                      )
 
-    def set(self,name,data,expire=3600):
+    def set(self,name,data,expire=3600*24):
         """
         :param name:
         :param data: data can be any structure,dict,list,tuple,set and string.
@@ -47,7 +47,7 @@ class BaseRedis():
         elif isinstance(data,dict):
             self.rs.hmset(name,data)
         if not isinstance(expire,int):
-            expire = 3600
+            expire = 3600*24
         self.rs.expire(name, expire)
 
 

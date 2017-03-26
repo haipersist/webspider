@@ -8,7 +8,7 @@ import warnings
 from collections import MutableMapping
 from importlib import import_module
 from pprint import pformat  #pprint模块用来打印稍微复杂的变量，输出便于阅读。
-from ..config import DATABASES,SPIDERPATH,EMAIL
+from ..config import DATABASES,SPIDERPATH,EMAIL,AUTH
 
 
 
@@ -72,5 +72,6 @@ def get_project_setting():
     setting.set('DATABASES',DATABASES)
     setting.set('SPIDERPATH',SPIDERPATH)
     setting.set('EMAIL',EMAIL)
+    setting.set('AUTH',AUTH)
     return setting
 
