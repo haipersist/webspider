@@ -34,9 +34,12 @@ class RunSpider(object):
         self.process.start()
 
 
+
+
+
 if __name__ == "__main__":
     spider = RunSpider()
-    spider.runOneSpider('51job')
+    spider.runOneSpider('liepin')
     print 'yes'
 
 

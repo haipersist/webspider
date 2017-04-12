@@ -39,7 +39,7 @@ class SendData(object):
 
 if __name__ == "__main__":
     s = SendData()
-    s.send_daily_job('2017-03-16')
+    s.send_daily_job('2017-03-29')
 
 
 

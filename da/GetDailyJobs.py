@@ -42,23 +42,23 @@ class DailyJob(object):
         the latest data.
         :return:
         """
-        sql = "select count(id) as total from jobs where date_format(load_time,'%Y-%m-%d')='%s'" % self.day
+        sql = "select count(id) as total from jobs where date_format(load_time,'%Y-%m-%d')="+"'%s'" % self.day
         count = self.db.query(sql)[0]['total']
         if not isinstance(count,int):
             count = int(count)
         return count
 
 
-def load_online_job():
+def load_online_job(day=date.today().strftime("%Y-%m-%d")):
     import requests
-    day = date.today().strftime("%Y-%m-%d")
     job = DailyJob(day=day)
     result = job.get_daily_job()
     setting = get_project_setting()
     auth = setting['AUTH']
     for item in result:
         item.pop("id")
-        item['pub_time'] = item['pub_time'].strftime("%Y-%m-%d")
+        item['pub_time'] = item['pub_time'].strftime("%Y-%m-%d") \
+            if item['pub_time'] is not None else day
         item['website'] = item['website_id']
         item.pop("website_id")
         item['company'] = item['company_id']
@@ -76,3 +76,6 @@ def load_online_job():
 
 
 
+if __name__ == "__main__":
+    g = DailyJob(day="2017-04-11")
+    load_online_job(day="2017-04-11")
