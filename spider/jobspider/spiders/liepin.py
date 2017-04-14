@@ -10,7 +10,7 @@ from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.config.websetting import LpCfg
 from datetime import date,timedelta
 
-class Job51_Spider(CrawlSpider):
+class LP_Spider(CrawlSpider):
     name = 'liepin'
 
     def start_requests(self):
