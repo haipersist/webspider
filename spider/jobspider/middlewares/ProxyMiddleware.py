@@ -12,3 +12,8 @@ class ProxyMiddleware(object):
         proxy = GetValidIP()
         if proxy:
             request.meta['proxy'] = proxy['http']
+
+
+if __name__ == "__main__":
+    proxy = GetValidIP()
+    print proxy

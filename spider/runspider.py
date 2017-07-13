@@ -39,7 +39,7 @@ class RunSpider(object):
 
 if __name__ == "__main__":
     spider = RunSpider()
-    spider.runOneSpider('liepin')
+    spider.runOneSpider('lagou')
     print 'yes'
 
 

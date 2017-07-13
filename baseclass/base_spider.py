@@ -49,7 +49,7 @@ class Base_Spider(object):
         return dict(r.cookies) if not isinstance(r.cookies,dict) else r.cookies
 
 
-    def get_content(self,url,url_type='html'):
+    def get_content(self,url,url_type='html', method='GET'):
         """
          get content which is in three different data format
         :param url:
@@ -79,8 +79,13 @@ class Base_Spider(object):
             except UnicodeDecodeError:
                 pass
         """
-
-        content = self.session.get(url,timeout = 15,headers=self.headers)
+        if method == 'GET':
+            content = self.session.get(url,timeout = 15,headers=self.headers)
+        if method == 'POST':
+            content = self.session.post(url,
+                                        timeout=15,
+                                        headers=self.headers,
+                                        )
         #print dict(content.cookies),'cookies'
         try:
             #get original data brfore transferring unicode

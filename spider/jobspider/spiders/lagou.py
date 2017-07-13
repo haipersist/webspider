@@ -25,8 +25,8 @@ class LG_Spider(CrawlSpider):
         """
         self.spider = Base_Spider(LgCfg)
         self.first_url = 'http://www.lagou.com/jobs/positionAjax.json?px=new&gx=%E5%85%A8%E8%81%8C&city=%E5%8C%97%E4%BA%AC&first=true&kd=python'
-        response = self.spider.get_content(self.first_url,url_type='json')
-
+        response = self.spider.get_content(self.first_url,url_type='json',method='POST')
+        print response
         content = response['content']["positionResult"]
         totalCount,pagesize = content["totalCount"],content["resultSize"]
         pages = totalCount/pagesize if totalCount%pagesize == 0 else totalCount/pagesize + 1
