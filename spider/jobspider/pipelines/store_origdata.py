@@ -49,14 +49,17 @@ class MySQLLoadPipeLine(object):
         if not db.query(sql):
             company = item['company']
             sql = 'select id,name from company where name="%s"'%company['name']
-            redis = BaseRedis()
+            #redis = BaseRedis()
             if not db.query(sql):
                 db.insert_by_dic('company',company)
-                self.logger.info(' '.join([company['name'],u'Insert Company into Mysql Success!']))
-                data = cPickle.dumps(company)
-                redis.set('new_company',[data])
-                self.logger.info(' '.join([company['name'], u'Insert Company into Redis Success!']))
-
+                self.logger.info(' '.join([company['name'],u'Insert Company:%s into Mysql Success!'%company['name']]))
+                try:
+                    redis = BaseRedis()
+                    data = cPickle.dumps(company)
+                    redis.set('new_company',[data])
+                    self.logger.info(' '.join([company['name'], u'Insert Company into Redis Success!']))
+                except Exception,e:
+                    pass
             sql = 'select id from company where name="%s"'%company['name']
             company = db.query(sql)[0]
             try:
@@ -68,12 +71,15 @@ class MySQLLoadPipeLine(object):
                 if cmp(day,self.today) == 0:
                     # serizilier,in order to get original structure from redis.
                     data = cPickle.dumps(item)
-                    redis.set('latest_jobs', [data])
-                    self.logger.info(' '.join([item['title'], u'Insert Job into Redis Success!']))
-            except Exception,e:
-                print item
-                self.logger.error(u'%s::名称:%s没有正确添加。请检查.%s\n' % (self.today,item['title'],str(e)))
+                    try:
+                        redis = BaseRedis()
+                        redis.set('latest_jobs', [data])
+                        self.logger.info(' '.join([item['title'], u'Insert Job into Redis Success!']))
+                    finally:
+                        pass
 
+            except Exception,e:
+                self.logger.error(u'%s:%s:%s\n' % (item['title'],item['link'],str(e)))
 
         return item
 

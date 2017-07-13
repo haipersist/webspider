@@ -85,7 +85,8 @@ class LG_Spider(CrawlSpider):
         #print response.url
         job_item, company_item = response.meta['job_item'], response.meta['company_item']
         company_item['introduction'] = ' '.join(sel.xpath('//ul[@class="c_feature"]/li/text()').extract())
-        company_item['address'] = ''.join(sel.xpath('//div[@class="work_addr"]/a/text()').extract())
+        company_item['address'] = ''.join(sel.xpath('//div[@class="work_addr"]/a/text()').extract()[0:-1])
+        company_item['homepage'] = sel.xpath('//ul[@class="c_feature"]/li[last()]/a/text()').extract_first()
         job_item['welfare'] = sel.xpath('//dd[@class="job-advantage"]/p/text()').extract_first()
         job_item['requirement'] = ' '.join(sel.xpath('//dd[@class="job_bt"]/div/p/text()').extract())
         job_item['company'] = company_item

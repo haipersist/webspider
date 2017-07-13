@@ -66,13 +66,14 @@ class ZL_Spider(CrawlSpider):
         sel = Selector(response)
         item = JobItem()
         company_item = response.meta['company_item']
-        company_item['introduction'] = sel.xpath('//div[@class="terminalpage-main clearfix"]/div[@class="tab-cont-box"]/div[@class="tab-inner-cont"]/p/text()').extract()[1]
+        company_item['homepage'] = sel.xpath('//div[@class="inner-left fl"]/h2/a/@href').extract_first()
+        company_item['introduction'] = ''.join(sel.xpath('//div[@class="terminalpage-main clearfix"]/div[@class="tab-cont-box"]/div[@class="tab-inner-cont"][last()]/p/text()').extract())
         company_item['address'] = sel.xpath('//div[@class="terminalpage-main clearfix"]/div[@class="tab-cont-box"]/div[@class="tab-inner-cont"]/h2/text()').extract_first()
         item['salary'] = sel.xpath('//div[@class="terminalpage-left"]/ul[@class="terminal-ul clearfix"]/li/strong/text()').extract_first()
         item['title'] = sel.xpath('//div[@class="inner-left fl"]/h1/text()').extract_first()
         item['link'] = response.url
         item['welfare'] = ' '.join(sel.xpath('//div[class="welfare-tab-box"]/span/text()').extract())
-        item['requirement'] = ' '.join(sel.xpath('//div[@class="terminalpage-main clearfix"]/div[@class="tab-cont-box"]/div[@class="tab-inner-cont"]/p/text()').extract())
+        item['requirement'] = ' '.join(sel.xpath('//div[@class="terminalpage-main clearfix"]/div[@class="tab-cont-box"]/div[@class="tab-inner-cont"][1]/p/text()').extract())
         item['website_id'] = 3
         item['pub_time'] = sel.xpath('//span[@id="span4freshdate"]/text()').extract_first()
         item['company'] = company_item

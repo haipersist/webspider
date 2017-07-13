@@ -34,7 +34,7 @@ def initenv():
 @manager.command
 def runspiders():
     spider = RunSpider()
-    spider.runMulSpider('zhilian','lagou','51job')
+    spider.runMulSpider('zhilian','lagou','51job','shuimu','liepin')
 
 @manager.command
 def load_online_data():

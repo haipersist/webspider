@@ -1,7 +1,7 @@
  # -*- coding: utf-8 -*-
 
 
-from twisted.internet import reactor
+#from twisted.internet import reactor
 from scrapy.crawler import Crawler,CrawlerRunner,CrawlerProcess
 from scrapy.utils.project import get_project_settings
 

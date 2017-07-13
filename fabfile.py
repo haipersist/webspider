@@ -10,10 +10,12 @@ def push(msg):
         local("git commit -m %s"% msg)
         local(("git push origin master"))
 
-
+def startredis():
+    local('nohup redis-server &')
 
 def crawl():
     with lcd(os.path.abspath('.')):
+        #local('python utils/IPProxyPool/IPProxy.py')
         local('bash run.sh')
 
 

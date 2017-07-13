@@ -16,15 +16,17 @@ from datetime import date
 from webspider.baseclass.baseRedis import BaseRedis
 from webspider.baseclass.database import Database
 from webspider.utils.get_project_setting import get_project_setting
+from webspider.utils.mylogger import MyLogger
 
 
 class DailyJob(object):
 
     def __init__(self,day=None):
         self.db = Database()
-        self.redis = BaseRedis()
+        #self.redis = BaseRedis()
         self.today = date.today().strftime("%Y-%m-%d")
         self.day = self.today if day is None else day
+
 
     def get_daily_job(self):
         #if cmp(self.today,self.day) == 0:
@@ -51,6 +53,7 @@ class DailyJob(object):
 
 def load_online_job(day=date.today().strftime("%Y-%m-%d")):
     import requests
+    logger = MyLogger('spider').logger
     job = DailyJob(day=day)
     result = job.get_daily_job()
     setting = get_project_setting()
@@ -69,7 +72,7 @@ def load_online_job(day=date.today().strftime("%Y-%m-%d")):
                               data=item,
                               auth=auth)
         except Exception, e:
-            print str(e)
+            logger.error('Load2line:{0}:{1}:{2}'.format(item['title'],item['link'],str(e)))
             continue
 
 
@@ -78,4 +81,4 @@ def load_online_job(day=date.today().strftime("%Y-%m-%d")):
 
 if __name__ == "__main__":
     g = DailyJob(day="2017-04-11")
-    load_online_job(day="2017-04-11")
+    load_online_job()

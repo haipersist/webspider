@@ -1,12 +1,21 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+import re
+import json
+from cStringIO import StringIO
+from scrapy.spiders import CrawlSpider,Rule
+from scrapy.selector import Selector
+import scrapy
 from webspider.baseclass.base_spider import Base_Spider
+from webspider.spider.jobspider.items import JobItem,CompanyItem
+from webspider.config.websetting import LgCfg
+
 
 
 class DJ_Spider(Base_Spider):
 
     def __init__(self,website,*args):
-        super(DJ_Spider,self).__init__(website,args)
+        super(DJ_Spider,self).__init__(website,*args)
 
     def parse(self,url):
         """

@@ -86,6 +86,7 @@ class Job51_Spider(CrawlSpider):
         company_item = response.meta['company_item']
         company_item['introduction'] = ''
         company_item['address'] = ''
+        company_item['homepage'] = ''
         item['salary'] = ''
         item['link'] = response.url
         item['welfare'] = sel.xpath('//td[@class="a-content"]/p').extract()

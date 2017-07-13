@@ -78,7 +78,9 @@ class Job51_Spider(CrawlSpider):
         item = response.meta['job_item']
         company_item = response.meta['company_item']
         company_item['introduction'] = sel.xpath('//div[@class="tmsg inbox"]/text()').extract_first()
-        company_item['address'] = sel.xpath('//p[@class="fp"]').extract_first()
+        company_item['address'] = sel.xpath('//p[@class="fp"]/text()').extract_first()
+        if not company_item['address']:
+            company_item['address'] = sel.xpath('//p[@class="fp"]').extract_first()
         item['salary'] = sel.xpath('//div[@class="cn"]/strong/text()').extract_first()
         item['title'] = sel.xpath('//div[@class="cn"]/h1/@title').extract_first()
         item['link'] = response.url

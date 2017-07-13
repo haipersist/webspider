@@ -14,38 +14,38 @@ set PYTHONPATH as your/path/to/Package
 
 #Sysytem Introduction
 
-##1、MySQL：
+## 1、MySQL：
 有几张表：
 1、 company。保存公司名称，为unique索引；
 2、 website.name of websites.
 3、 jobs,职位基本信息，公司名称,website是外键；
 
 
-##2、Redis：
+## 2、Redis：
 Redis用来保存每个公司的最新职位，每天进行更新，key为公司名称。
 要设置更新机制，如果一个公司的职位在一个月内没有更新，也要删除该职位信息。
 
-##3、项目结构
-###1、 Config
+## 3、项目结构
+### 1、 Config
 各种配置文件
-###2、 Baseclass
+### 2、 Baseclass
 定义各种基类，数据库客户端，爬虫基类等等。
-###3、 Tests
+### 3、 Tests
 该文件包用来做单元测试
-###4、 Utils
+### 4、 Utils
 该Python包保存各种通用的函数和类，类似工具。
-###5、 各种spider
+### 5、 各种spider
 存储各种具体的spider。
-###6、 Crontab文件
+### 6、 Crontab文件
 定时任务
-###7、 脚本
+### 7、 脚本
 各种脚本
-###8、Template
+### 8、Template
 存储用来发送邮件的模板。
 
-###9、 Manage.py
+### 9、 Manage.py
 主文件，用来管理工程项目，启动，停止，配置等等。
 
 
-###10、da
+### 10、da
 data statistic and analysize

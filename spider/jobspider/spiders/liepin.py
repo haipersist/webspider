@@ -60,17 +60,16 @@ class LP_Spider(CrawlSpider):
             #print 'd',job
             info = job.xpath('div[@class="sojob-item-main clearfix"]/div[@class="job-info"]')
             com_info = job.xpath('div[@class="sojob-item-main clearfix"]/div[@class="company-info nohover"]')
-            title = info.xpath('h3/@title').extract_first().lower()
+            title = info.xpath('h3/a/text()').extract_first().lower()
             if title.find('python') != -1:
                url = info.xpath('h3/a/@href').extract_first()
-               print url
                request = scrapy.Request(url=url,
                                         callback=self.parse_items,
                                         headers=self.spider.headers,
                                         cookies=self.cookies)
                company_item, job_item = CompanyItem(), JobItem()
                company_item['name'] = com_info.xpath('p[@class="company-name"]/a/text()').extract_first()
-               company_item['introduction'] = com_info.xpath('p[@class="company-name"]/a/@href').extract_first()
+               company_item['homepage'] = com_info.xpath('p[@class="company-name"]/a/@href').extract_first()
                job_item['pub_time'] = info.xpath('p[@class="time-info clearfix"]/time/text()').extract_first()
                year = str(date.today().year)
                if str(year) not in job_item['pub_time']:
@@ -98,9 +97,10 @@ class LP_Spider(CrawlSpider):
         sel = Selector(response)
         item = response.meta['job_item']
         company_item = response.meta['company_item']
-        company_item['address'] = ''
+        company_item['introduction'] = sel.xpath('//div[@class="job-item main-message noborder"]/div[@class="content content-word"]/text()').extract_first()
+        company_item['address'] = sel.xpath('//div[@class="company-infor"]/p/text()').extract_first()
         item['link'] = response.url
-        item['requirement'] = ' '.join(sel.xpath('//div[@class="content content-word"]/text()').extract())
+        item['requirement'] = sel.xpath('//div[@class="content content-word"][1]/text()').extract_first()
         item['website_id'] = 7
         item['company'] = company_item
         print item

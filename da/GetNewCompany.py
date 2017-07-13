@@ -22,12 +22,21 @@ class NewCompany(object):
 
     def __init__(self):
         self.db = Database()
+
     @property
     def daily_new_company(self):
-        #redis = BaseRedis()
-        #return redis.get('new_company',type='list')
-        sql = 'select name,address,introduction from company where id>738'
-        return self.db.query(sql)
+        try:
+            redis = BaseRedis()
+            companies = redis.get('new_company',type='list')
+            if not companies:
+                if len(companies)==0:
+                    sql = 'select name,address,introduction,homepage from company where id>1420'
+                    companies = self.db.query(sql)
+        except:
+            sql = 'select name,address,introduction,homepage from company where id>1420'
+            companies = self.db.query(sql)
+        finally:
+            return companies
 
     def get_weekly_company(self):
         pass
@@ -52,6 +61,7 @@ def load_online_company():
 
 
 
-
+if __name__ == "__main__":
+    load_online_company()
 
 
