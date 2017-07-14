@@ -49,7 +49,7 @@ class Base_Spider(object):
         return dict(r.cookies) if not isinstance(r.cookies,dict) else r.cookies
 
 
-    def get_content(self,url,url_type='html', method='GET'):
+    def get_content(self,url,url_type='html', method='GET',data=None):
         """
          get content which is in three different data format
         :param url:
@@ -85,6 +85,7 @@ class Base_Spider(object):
             content = self.session.post(url,
                                         timeout=15,
                                         headers=self.headers,
+                                        data=data
                                         )
         #print dict(content.cookies),'cookies'
         try:

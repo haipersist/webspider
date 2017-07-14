@@ -36,6 +36,8 @@ class NewCompany(object):
             sql = 'select name,address,introduction,homepage from company where id>1420'
             companies = self.db.query(sql)
         finally:
+            sql = 'select name,address,introduction,homepage from company where id>1420'
+            companies = self.db.query(sql)
             return companies
 
     def get_weekly_company(self):
@@ -52,9 +54,13 @@ def load_online_company():
     companies = NewCompany().daily_new_company
     for item in companies:
         try:
+
             r = requests.post('http://dailyblog.applinzi.com/api/companies/',
                               data=item,
                               auth=auth)
+            if r.status_code != 200:
+                print item
+                print r.text
         except Exception, e:
             print str(e)
             continue

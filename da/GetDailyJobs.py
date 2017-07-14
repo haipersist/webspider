@@ -80,5 +80,5 @@ def load_online_job(day=date.today().strftime("%Y-%m-%d")):
 
 
 if __name__ == "__main__":
-    g = DailyJob(day="2017-04-11")
+    g = DailyJob()
     load_online_job()

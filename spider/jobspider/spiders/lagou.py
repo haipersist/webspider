@@ -25,21 +25,47 @@ class LG_Spider(CrawlSpider):
         """
         self.spider = Base_Spider(LgCfg)
         self.first_url = 'http://www.lagou.com/jobs/positionAjax.json?px=new&gx=%E5%85%A8%E8%81%8C&city=%E5%8C%97%E4%BA%AC&first=true&kd=python'
-        response = self.spider.get_content(self.first_url,url_type='json',method='POST')
-        print response
-        content = response['content']["positionResult"]
-        totalCount,pagesize = content["totalCount"],content["resultSize"]
-        pages = totalCount/pagesize if totalCount%pagesize == 0 else totalCount/pagesize + 1
+        """
+        response = self.spider.get_content(self.first_url,
+                                           url_type='json',
+                                           method='POST',
+                                           data={
+                                               'first':'true',
+                                               'kd':'python',
+                                               'pn':'1'
+                                           })
+        #content = response['content']["positionResult"]
+        #totalCount,pagesize = content["totalCount"],content["resultSize"]
+        #pages = totalCount/pagesize if totalCount%pagesize == 0 else totalCount/pagesize + 1
+        """
         #scrapy cookies must be dict.必须是字典形式.这和requests模块有区别。
         cookies = LgCfg.cookies()
         self.spider.headers.update({'Cookie':cookies})
-        for page in range(1,pages+1):
+        for page in range(1,10):
             url = self.first_url + '&pn=%d'%page
             #print url
             yield scrapy.Request(url=url,
                                  callback=self.parse,
                                  cookies=cookies,
+
                                  headers=self.spider.headers)
+            #the below is one method for getting data,which use post method
+            """
+            first = 'true' if page==1 else 'false'
+            yield scrapy.FormRequest(
+                url='https://www.lagou.com/jobs/positionAjax.json?px=new&gx=%E5%85%A8%E8%81%8C&city=%E5%8C%97%E4%BA%AC&needAddtionalResult=false',
+                headers=self.spider.headers,
+                cookies=cookies,
+                method='POST',
+
+                formdata={
+                    'kd':'python',
+                    'pn':page,
+                    'first':first
+                },
+                callback=self.parse
+            )
+            #"""
 
     def parse(self, response):
         """
@@ -73,6 +99,7 @@ class LG_Spider(CrawlSpider):
             request.meta['company_item'] = company_item
             request.meta['job_item'] = job_item
             yield request
+
 
     def parse_items(self,response):
         """
