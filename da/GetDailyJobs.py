@@ -14,25 +14,29 @@ Usage:
 import cPickle
 from datetime import date
 from webspider.baseclass.baseRedis import BaseRedis
-from webspider.baseclass.database import Database
 from webspider.utils.get_project_setting import get_project_setting
-from webspider.utils.mylogger import MyLogger
+from utils.mylogger import MyLogger
+from da import BaseJob
 
 
-class DailyJob(object):
+class DailyJob(BaseJob):
 
     def __init__(self,day=None):
-        self.db = Database()
-        #self.redis = BaseRedis()
         self.today = date.today().strftime("%Y-%m-%d")
         self.day = self.today if day is None else day
-
+        super(DailyJob,self).__init__()
 
     def get_daily_job(self):
-        #if cmp(self.today,self.day) == 0:
-        #    result = self.redis.get('latest_jobs',type='list')
-        #    if result:
-        #        return [cPickle.loads(item) for item in result]
+        if cmp(self.today,self.day) == 0:
+            try:
+                self.redis = BaseRedis()
+                result = self.redis.get('latest_jobs',type='list')
+                if result:
+		    print 'it comes from redis'
+                    return [cPickle.loads(item) for item in result]
+            except Exception,e:
+                self.logger.error(str(e))
+
         sql = "select * from jobs where date_format(load_time,'%Y-%m-%d')="+"'%s'"%self.day
         return self.db.query(sql)
 
@@ -49,6 +53,7 @@ class DailyJob(object):
         if not isinstance(count,int):
             count = int(count)
         return count
+
 
 
 def load_online_job(day=date.today().strftime("%Y-%m-%d")):
@@ -81,4 +86,4 @@ def load_online_job(day=date.today().strftime("%Y-%m-%d")):
 
 if __name__ == "__main__":
     g = DailyJob()
-    load_online_job()
+    print len(g.get_daily_job())

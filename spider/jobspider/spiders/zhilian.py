@@ -5,6 +5,7 @@ import re
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 import scrapy
+from datetime import date
 from webspider.baseclass.base_spider import Base_Spider
 from webspider.spider.jobspider.items import JobItem,CompanyItem
 from webspider.config.websetting import ZLCfg
@@ -75,7 +76,9 @@ class ZL_Spider(CrawlSpider):
         item['welfare'] = ' '.join(sel.xpath('//div[class="welfare-tab-box"]/span/text()').extract())
         item['requirement'] = ' '.join(sel.xpath('//div[@class="terminalpage-main clearfix"]/div[@class="tab-cont-box"]/div[@class="tab-inner-cont"][1]/p/text()').extract())
         item['website_id'] = 3
-        item['pub_time'] = sel.xpath('//span[@id="span4freshdate"]/text()').extract_first()
+	pub_time = sel.xpath('//span[@id="span4freshdate"]/text()').extract_first()
+        item['pub_time'] = pub_time if '2017' in pub_time else date.today().strftime("%Y-%m-%d")
+	print item['pub_time'],type(item['pub_time'])
         item['company'] = company_item
         yield item
 

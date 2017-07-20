@@ -14,20 +14,20 @@ Usage:
 import cPickle
 from datetime import date,timedelta,datetime
 from webspider.baseclass.database import Database
+from da import BaseJob
 
 
 
 
-
-class SeridJob(object):
+class SeridJob(BaseJob):
 
     def __init__(self,end=None,serid=7):
-        self.db = Database()
         if end is None:
             self.end = date.today().strftime("%Y-%m-%d")
         else:
             self.end = end
         self.start = (datetime.strptime(self.end,"%Y-%m-%d") - timedelta(days=serid)).strftime("%Y-%m-%d")
+        super(SeridJob,self).__init__()
 
     def get_serid_job(self):
         sql = "select * from jobs where date_format(load_time,'%Y-%m-%d') BETWEEN '%s' and '%s'" % (self.start,self.end)
@@ -40,13 +40,23 @@ class SeridJob(object):
             count = int(count)
         return count
 
-    def get_serid_job_groupby(self,category):
+    def get_serid_job_groupby(self,category,start=None,end=None):
+        where = "where a.pub_time between '%s' and '%s'" % (start,end) \
+            if start is not None and end is not None else ''
         if category=='website':
-            sql = "select count(a.id) as num,b.website as %s from jobs a join website b " \
-                  "on a.website_id=b.id group by a.website_id" % category
+            if not where:
+                sql = "select count(a.id) as num,b.website as %s from jobs a join website b " \
+                      "on a.website_id=b.id group by a.website_id" % category
+            else:
+                sql = "select count(a.id) as num,b.website as %s from jobs a join website b " \
+                      "on a.website_id=b.id %s group by a.website_id" % (category,where)
         elif category == 'company':
-            sql = "select count(a.id) as num,b.name as %s from jobs a join company b " \
-                  "on a.company_id=b.id group by a.company_id" % category
+            if not where:
+                sql = "select count(a.id) as num,b.name as %s from jobs a join company b " \
+                    "on a.company_id=b.id group by a.company_id" % category
+            else:
+                sql = "select count(a.id) as num,b.name as %s from jobs a join company b " \
+                    "on a.company_id=b.id %s group by a.company_id" % (category, where)
         else:
             if category == 'load_time':
                 category = 'date_format(%s,'%category+'"%Y-%m-%d")'
@@ -67,6 +77,11 @@ class SeridJob(object):
 
 if __name__ == "__main__":
     serid = SeridJob()
-    print len(serid.get_serid_job_groupby('company'))
+    result = serid.get_serid_job_groupby('company',
+                                         start='2017-06-01 00:00:00',
+                                         end='2017-07-20 20:00:00')
+    for item in result.keys():
+        if result[item]:
+            print item,result[item]
 
 

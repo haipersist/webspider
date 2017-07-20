@@ -41,5 +41,5 @@ if __name__ == "__main__":
 ; index_location_city=%E5%8C%97%E4%BA%AC; TG-TRACK-CODE=search_code; SEARCH_ID=94054433704c44139fd05
 6f489f15c12
     """
-    print cookie2scrapy(cookies).items()
+    print cookie2scrapy(cookies).keys()
 

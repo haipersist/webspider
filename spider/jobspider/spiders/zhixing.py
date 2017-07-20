@@ -1,6 +1,6 @@
  # -*- coding: utf-8 -*-
 
-import scrapy
+
 from scrapy.spiders import CrawlSpider,Rule
 from scrapy.selector import Selector
 from scrapy.http import Request

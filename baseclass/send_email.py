@@ -26,7 +26,7 @@ class Mail():
 
     def _set_server(self):
         self.email_var = self.setting['EMAIL']
-        #print self.email_var
+        print self.email_var
         self.send_server = self.email_var['EMAIL_HOST']
         self.user = self.email_var['EMAIL_HOST_USER']
         self.port = self.email_var['EMAIL_PORT']
@@ -62,7 +62,7 @@ class Mail():
         if msgtxt:
             ms.attach(MIMEText(msgtxt, 'plain', 'utf8'))
         try:
-            self.smtp = smtplib.SMTP(self.send_server)
+            self.smtp = smtplib.SMTP_SSL(self.send_server,self.port)
             #self.smtp.connect(self.send_server)
             self.smtp.login(self.user,self.password)
             self.smtp.sendmail(ms['From'],Addrs,ms.as_string())
@@ -74,7 +74,7 @@ class Mail():
 
 
 if __name__=="__main__":
-    S_mail = Mail('myself')
+    S_mail = Mail('daily')
     print os.environ.keys()
     html = """
         <h3> 2017-03-08</h3>

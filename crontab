@@ -24,7 +24,7 @@
 8 8 * * 5 bash /home/haibo/study/myworks/jobspider/jobspider/send_data/send_mysql_sql.sh >/tmp/jobsql.log 2>&1
 1 0 * * * bash /home/haibo/study/myworks/scripts/get_visit_ip.sh >/tmp/load_ip2online.log 2>&1
 
-30 23 * * * bash /home/haibo/study/myworks/spider/webspider/scripts/run.sh  >/tmp/crawl_job_from_spider.log 2>&1
-0 0 * * * bash /home/haibo/study/myworks/spider/webspider/scripts/senddata.sh  >/tmp/send_spider_data.log 2>&1
+30 23 * * * bash /home/haibo/spider/webspider/scripts/run.sh  >/tmp/logs/spider/crawl_job_from_spider.log 2>&1
+0 0 * * * bash /home/haibo/spider/webspider/scripts/senddata.sh  >/tmp/logs/spider/send_spider_data.log 2>&1
 
 

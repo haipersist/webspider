@@ -46,7 +46,8 @@ class MySQLLoadPipeLine(object):
         """
         db = Database()
         sql = 'select id from jobs where link="%s"'%item['link']
-        if not db.query(sql):
+        query_result = db.query(sql)
+        if not query_result:
             company = item['company']
             sql = 'select id,name from company where name="%s"'%company['name']
             #redis = BaseRedis()
@@ -80,7 +81,8 @@ class MySQLLoadPipeLine(object):
 
             except Exception,e:
                 self.logger.error(u'%s:%s:%s\n' % (item['title'],item['link'],str(e)))
-
+        else:
+            print item['link'],query_result['id']
         return item
 
 

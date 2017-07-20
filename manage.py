@@ -34,14 +34,14 @@ def initenv():
 @manager.command
 def runspiders():
     spider = RunSpider()
-    spider.runMulSpider('zhilian','lagou','51job','shuimu','liepin')
+    spider.runMulSpider('zhilian', 'lagou', '51job', 'shuimu', 'liepin')
 
 @manager.command
 def load_online_data():
     load_online_company()
     load_online_job()
 
-@manager.option('-n','--name',dest='name',default=None)
+@manager.option('-n','--name', dest='name', default=None)
 def runsinglespider(name):
     if name is None:
         print 'input spider name'
@@ -49,7 +49,7 @@ def runsinglespider(name):
     spider.runOneSpider(name)
 
 
-@manager.option('-c','--category',dest='name',default='all')
+@manager.option('-c','--category', dest='name', default='all')
 def senddata(name):
     sent = SendData()
     if name == 'all':
@@ -58,11 +58,12 @@ def senddata(name):
         sent.send_daily_job()
     elif name == 'company':
         sent.send_daily_company()
+    elif name == 'monthly_jobs':
+        sent.stat_by_company()
+        sent.stat_by_website()
+
 
 
 
 if __name__ == "__main__":
     manager.run()
-
-
-

@@ -32,7 +32,7 @@ class MyLogger():
 
     @property
     def error_file_handler(self):
-        self.filelog = os.path.join(self.projectpath,'logs')
+        self.filelog = '/tmp/logs/spider'
         formater = logging.Formatter(
             '%(asctime)s %(levelname)s %(message)s in %(filename)s %(levelno)s'
         )
@@ -43,7 +43,7 @@ class MyLogger():
 
     @property
     def info_file_handler(self):
-        self.filelog = os.path.join(self.projectpath,'logs')
+        self.filelog = '/tmp/logs/spider'
         formater = logging.Formatter(
             '%(asctime)s %(levelname)s %(message)s in %(filename)s %(levelno)s'
         )

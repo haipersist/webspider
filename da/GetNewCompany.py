@@ -11,40 +11,35 @@ Usage:
     dailycom = company.get_daily_company()
 
 """
-
+import cPickle
 from datetime import date
 from webspider.baseclass.baseRedis import BaseRedis
 from webspider.baseclass.database import Database
 from webspider.utils.get_project_setting import get_project_setting
+from da import BaseJob
 
-
-class NewCompany(object):
+class NewCompany(BaseJob):
 
     def __init__(self):
-        self.db = Database()
+        super(NewCompany,self).__init__()
 
     @property
     def daily_new_company(self):
         try:
             redis = BaseRedis()
             companies = redis.get('new_company',type='list')
-            if not companies:
-                if len(companies)==0:
-                    sql = 'select name,address,introduction,homepage from company where id>1420'
-                    companies = self.db.query(sql)
-        except:
-            sql = 'select name,address,introduction,homepage from company where id>1420'
-            companies = self.db.query(sql)
-        finally:
-            sql = 'select name,address,introduction,homepage from company where id>1420'
-            companies = self.db.query(sql)
-            return companies
+            if companies:
+                if len(companies) != 0:
+		    print 'it comes from redis'
+                    return [cPickle.loads(x) for x in companies]
+        except Exception,e:
+            self.logger.error(str(e))
 
-    def get_weekly_company(self):
-        pass
+        sql = 'select name,address,introduction,homepage from company where id>1420'
+        return self.db.query(sql)
 
-    def get_monthly_company(self):
-        pass
+
+
 
 
 def load_online_company():
@@ -68,6 +63,7 @@ def load_online_company():
 
 
 if __name__ == "__main__":
-    load_online_company()
+    new = NewCompany()
+    print len(new.daily_new_company)
 
 
